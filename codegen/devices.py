@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 # # Devices, used in this configuration
+from ast import Str
+from typing import Any
+
+
 class DEVICES:
     # IKEA Lamps
     IKEA_TRADFRI_LAMP_CLEAR_806 = {
@@ -315,3 +319,6 @@ class DEVICES:
         'device_name': 'Silvercrest radiator valve with thermostat',
         'device_url': 'https://www.zigbee2mqtt.io/devices/368308_2010.html',
     }
+
+    def get_from_id(self, id: Str) -> Any:
+        return getattr(self, id)
