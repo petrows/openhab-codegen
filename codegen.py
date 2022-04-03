@@ -2,8 +2,6 @@
 """
     This script provides OpenHab codegen functionality.
     Purpose: generate repeating items config.
-
-    Plug - have only ON/OFF states
 """
 
 import os
@@ -27,31 +25,6 @@ PREAMBULA = """
 // ==========================================
 
 """
-
-# Reserve:
-# 0xec1bbdfffe9abfde - Ikea WW 860 (offline shop)
-# 0x14b457fffe6383e5 - TRADFRI LED bulb E14/E26/E27 600 lumen, dimmable, color, opal white (ebay)
-# 0x000d6ffffe12e11b - Ikea CT 1000 (ebay)
-# 0x14b457fffe399241 - Ikea CT 1000 (ebay)
-# 0xec1bbdfffe4695b5 - Ikea WW 806 (ebay)
-# 0x60a423fffe4b9138 - Aldi LIGHTWAY smart home LED-lamp - filament (F122SB62H22A4.5W) (Aldi 2020-02-27)
-# 0x60a423fffe4b91cf - Aldi LIGHTWAY smart home LED-lamp - filament (F122SB62H22A4.5W) (Aldi 2020-03-02)
-# 0x847127fffe0c873b - TuYa Wall switch module (WHD02) (aliexpress 2020-04-09)
-# 0x00158d0006b7aa81 - Xiaomi Aqara water leak sensor (SJCGQ11LM) (aliexpress 2020-06-18)
-# 0x5c0272fffedc2f41 - TuYa Radiator valve with thermostat (TS0601_thermostat) (aliexpress 2020-06-18)
-# 0x0c4314fffe73bf1f - Silvercerst thermostat (ebay 2021-12-30)
-# 0x0c4314fffe62f090 - Silvercerst thermostat (ebay 2021-12-30)
-# 0x0c4314fffe73c43f - Silvercerst thermostat (ebay 2022-01-07)
-# 0x04cd15fffe6bf002 - Ikea 1055 lm (IKEA 2022-03-18)
-# 0x04cd15fffe35e43a - Ikea 1055 lm (IKEA 2022-03-18) - defekt (noise) - return to Ikea 2022-03-19
-# 0x04cd15fffe6d57dc - Ikea styrbar (IKEA 2022-03-18)
-# 0x04cd15fffe73ecb6 - Ikea 1055 lm (IKEA 2022-03-19)
-# 0x04cd15fffe35f24e - Ikea 1055 lm (IKEA 2022-03-19)
-# 0x04cd15fffe75c518 - Ikea styrbar (IKEA 2022-03-19)
-# 0x0c4314fffe5c6913 - Silvercerst thermostat (ebay 2022-03-22)
-# 0xa4c138f5460e22dd - Tuya temperature sensor TS0201 (aliexpress 2022-03-31)
-# 0xa4c1383cc92cbbd2 - Tuya temperature sensor TS0201 (aliexpress 2022-03-31)
-# 0xa4c1386df39045f6 - Tuya temperature sensor TS0201 (aliexpress 2022-03-31)
 
 # Items defentition
 items = [
@@ -631,6 +604,23 @@ items = [
         }
     },
 ]
+
+
+def class_value_to_string(my_class_num, the_class):
+    for k, v in the_class.__dict__.items():
+        if v == my_class_num:
+            print(f"{k} -> {v}")
+    #try:
+    return next(k for k, v in the_class.__dict__.items() if v == my_class_num)
+    #except:
+    #    return "UNKNOWN VALUE"
+
+for x, item in enumerate(items):
+    items[x]['type'] = str(class_value_to_string(items[x]['type'], DEVICES))
+
+print(yaml.dump(items, sort_keys=False))
+
+sys.exit(0)
 
 
 def device_label(item):
