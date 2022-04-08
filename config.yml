@@ -1,4 +1,6 @@
-
+config:
+  mqtt:
+    broker: mqtt:broker:openhab
 devices:
   # Test items
   - name: Sturbar test

@@ -1,0 +1,13 @@
+config:
+  mqtt_broker_id: my_broker_name
+devices:
+  # Tasmota item
+  - type: TASMOTA_SONOFF_MINI
+    channels:
+      POWER:
+        id: room_tasmota_singlechannel
+        name: Tasmota item (single-channel)
+        expire: 1h
+        groups:
+          - g_light_all
+          - g_light_kg

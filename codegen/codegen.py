@@ -4,19 +4,50 @@
 """
 
 
+from difflib import context_diff, ndiff, unified_diff
 import logging
 from pathlib import Path
 from pprint import pp
+import sys
+from typing import List
 
 import numpy as np
+from codegen import thing
+from codegen.device import Device
+
+from codegen.thing import Thing
 from . import devices
 import yaml
+
+PREAMBULA = """
+// ==========================================
+// THIS FILE IS AUTO GENERATED
+// Do not edit by hands
+// Use this command to regenerate:
+// python3 ./bin/codegen.py
+// ==========================================
+
+""".split('\n')
 
 class codegen:
     """
         Main application class
     """
-    def __init__(self) -> None:
+
+    config_defaults = {
+        "mqtt_broker_id": "openhab",
+        # Use deivce ID as topic for Zegbee
+        "zibee_pretty_name_topic": True,
+    }
+
+    def __init__(
+            self,
+            write=False,
+            openhab_path:Path=None,
+        ) -> None:
+        self.write = write
+        self.openhab_path = openhab_path
+        self.devices:List[Device] = list()
         pass
 
 
@@ -27,10 +58,51 @@ class codegen:
 
         with open(config_path, "r") as stream:
             config = yaml.safe_load(stream)
-            self.devices = config['devices']
+            self.config = self.config_defaults | config['config']
+            self.config_devices = config['devices']
 
-    def device_short_id(self, id):
-        return id[-4:]
+    def write_file(self, data, file=Path):
+        # Join data file to strings + trailing \n
+        things_conf = '\n'.join(data) + '\n'
+        # We have previos version?
+        things_conf_old = list()
+        try:
+            with open(file, 'r') as f:
+                things_conf_old = f.readlines()
+        except:
+            pass
+        # Disaply diff
+        if things_conf_old:
+            sys.stdout.writelines(
+                unified_diff(
+                    things_conf_old,
+                    # Emulate data read by readlines()
+                    [s + "\n" for s in data],
+                    fromfile=file.name,
+                    tofile=file.name,
+                )
+            )
+        # Write file...
+        if self.write:
+            with open(file, 'w') as f:
+                f.write(things_conf)
+
+
+    def update_things(self, file=Path):
+
+        # Generate THINGS
+        conf_str: List[str] = list()
+        conf_str.extend(PREAMBULA)
+        for device in self.devices:
+            things = device.get_things()
+
+            conf_str.extend(device.get_comment())
+            for thing in things:
+                conf_str.extend(thing.get_config())
+
+            logging.debug("Device: %s", device.get_label())
+
+        self.write_file(conf_str, file)
 
 
     def run(self):
@@ -43,38 +115,20 @@ class codegen:
         # Step 1: find and validate devices ID and apply common values
         # map item property 'type' with proper value from DEVICES array
 
-        for k, v in enumerate(self.devices):
-            type = v['type']
-            # Find device config from DEVICES object
-            type_config = device_registry.get_from_id(id=type)
-            # Update current item config from text ID to real array from device
-            self.devices[k]['type'] = type_config
+        self.item_addresses = []
+
+        for device in self.config_devices:
+            device_obj = device_registry.get_device(device, self.config)
+            device_addr = device_obj.get_device_address()
+            self.devices.append(device_obj)
+            if device_addr in self.item_addresses:
+                raise Exception(f"Device Address {device_addr} is not unique!")
+            self.item_addresses.append(device_addr)
 
         logging.info("Processing %d devices", len(self.devices))
 
-        # Step 2: Generate some common values for devices list
-        # This will prepare devices with some common properties set
-
-        self.item_ids = []
-        self.zigbee_ids = []
-        self.zigbee_devices_list = {}
-        for x, item in enumerate(self.devices):
-            # Ensure that device ID is unqique -> throw an error else
-            if item['id'] in self.item_ids:
-                raise Exception(f"Device ID {item['id']} is not unique!")
-            self.item_ids.append(item['id'])
-            self.devices[x]['mqtt_topic'] = f"{self.devices[x]['id']}"
-            if np.in1d(['zigbee'], item['type']['types']).any():
-                # Add to all Zigbee items generated MQTT topic like "zigbee-XXXX"
-                self.devices[x]['zigbee_short'] = self.device_short_id(
-                    item['zigbee_id'])
-                # Add ids to check conflicts
-                if self.devices[x]['zigbee_short'] in self.zigbee_ids:
-                    raise Exception(f"Device ID {item['id']} is not unique!")
-                self.zigbee_ids.append(self.devices[x]['zigbee_short'])
-                self.zigbee_devices_list[item['zigbee_id']] = item['id']
-
-        pp(self.devices)
-        pp(self.zigbee_devices_list)
+        self.update_things(
+            file=self.openhab_path / "gen_things.thing",
+        )
 
 

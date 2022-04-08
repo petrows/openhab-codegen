@@ -4,8 +4,38 @@
 from ast import Str
 from typing import Any
 
+from codegen.device import Device
+
 
 class DEVICES:
+    """
+        This staitc class: supported device registry
+
+        types: array of 'tags' for this device:
+
+            * tasmota : device is Tamota driven (mqtt)
+            * zigbee : device is Zigbee network (zigbee2mqtt)
+
+            * lamp : device is lamp (has ON/OFF channel)
+            * activity : device is checked for activity
+            * rssi : device reports WiFi network name
+            * bssid : device reports WiFi basic station MAC
+            * la : device reports Load Average
+    """
+
+    def get_from_id(self, id: Str) -> Any:
+        return getattr(self, id)
+
+    def get_device(self, device_config, global_config) -> Device:
+        # Find device config from DEVICES object
+        type_config = self.get_from_id(id=device_config['type'])
+        # Create device class
+        device = Device(device_config, type_config)
+        device.set_global_config(global_config)
+        return device
+
+    # =========================================================================
+
     # IKEA Lamps
     IKEA_TRADFRI_LAMP_CLEAR_806 = {
         'types': [
@@ -320,5 +350,4 @@ class DEVICES:
         'device_url': 'https://www.zigbee2mqtt.io/devices/368308_2010.html',
     }
 
-    def get_from_id(self, id: Str) -> Any:
-        return getattr(self, id)
+
