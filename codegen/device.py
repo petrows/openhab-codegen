@@ -1,7 +1,7 @@
 from pydoc_data.topics import topics
 from typing import List
 import numpy as np
-from codegen.item import Item
+from codegen.item import Item, MQTT_Item
 from codegen.thing import *
 
 
@@ -71,13 +71,26 @@ class Device:
         )
         return conf_str
 
+    def get_groups(self, type: Str) -> List[Str]:
+        return list()
+
+    def get_channel_groups(self, channel: Str, type: Str) -> List[Str]:
+        return list()
+
     def is_tasmota(self) -> bool:
         return np.in1d(['tasmota'], self.tags).any()
 
     def has_monitoring(self) -> bool:
         return np.in1d(['activity'], self.tags).any()
 
+    def has_tag(self, tag: Str) -> bool:
+        return tag in self.tags
+
     def get_things(self) -> List[Thing]:
+        """
+            Prepare list of Things
+        """
+
         things = list()
 
         # Generate items list for Tasmota devices
@@ -168,5 +181,70 @@ class Device:
         return [thing]
 
     def get_items(self) -> List[Item]:
-        return list()
+        """
+            Prepare list of Items
+        """
 
+        items: List[Item] = list()
+
+        # Generate items list for Tasmota devices
+        if self.is_tasmota():
+            items.extend(self.get_items_tasmota())
+
+        # Common items for devices
+
+        # WIFI items
+        if self.has_tag('rssi'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_rssi",
+                    name=f"{self.name} RSSI [%.0f]",
+                    type='Number:Dimensionless',
+                    icon='network',
+                    groups=self.get_groups(type='rssi'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id='rssi',
+                    sitemap_type='Text',
+                )
+            )
+        if self.has_tag('bssid'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_bssid",
+                    name=f"{self.name} BSSID [%s]",
+                    type='String',
+                    icon='network',
+                    groups=self.get_groups(type='bssid'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id='bssid',
+                    sitemap_type='Text',
+                )
+            )
+
+        return items
+
+    def get_items_tasmota(self) -> List[Item]:
+        """
+            Things for Tasmota.
+            It has MQTT driven items, generate thing from this device
+        """
+
+        items = list()
+
+        for channel in self.type['tasmota_channels']:
+            # Check device channels - has defined config in end-device?
+            if channel['id'] in self.channels:
+                channel_cfg = self.channels[channel['id']]
+                items.append(
+                    MQTT_Item(
+                        id=f"{channel_cfg['id']}_sw",
+                        name=channel_cfg['name'],
+                        type='Switch',
+                        groups=self.get_channel_groups(channel=channel['id'], type='sw'),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=channel['id'],
+                        sitemap_type='Switch',
+                    )
+                )
+
+        return items

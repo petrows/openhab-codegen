@@ -376,23 +376,23 @@ if __name__ == "__main__":
             device_items['items'].append(f"Text item={item['id']}_pressure")
 
         # Special WiFi things
-        if np.in1d(['rssi'], item['type']['types']).any():
-            device_icon = 'network'
-            conf_str.append(
-                f"Number:Dimensionless {item['id']}_rssi \"{item['name']} RSSI [%.0f]\" <{device_icon}>"
-                f"{device_groups(item,'rssi')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:rssi\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_rssi")
+        # if np.in1d(['rssi'], item['type']['types']).any():
+        #     device_icon = 'network'
+        #     conf_str.append(
+        #         f"Number:Dimensionless {item['id']}_rssi \"{item['name']} RSSI [%.0f]\" <{device_icon}>"
+        #         f"{device_groups(item,'rssi')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:rssi\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_rssi")
 
-        if np.in1d(['bssid'], item['type']['types']).any():
-            device_icon = 'network'
-            conf_str.append(
-                f"String {item['id']}_bssid \"{item['name']} BSSID [%s]\" <{device_icon}>"
-                f"{device_groups(item,'bssid')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:bssid\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_bssid")
+        # if np.in1d(['bssid'], item['type']['types']).any():
+        #     device_icon = 'network'
+        #     conf_str.append(
+        #         f"String {item['id']}_bssid \"{item['name']} BSSID [%s]\" <{device_icon}>"
+        #         f"{device_groups(item,'bssid')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:bssid\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_bssid")
 
         if np.in1d(['la'], item['type']['types']).any():
             device_icon = 'energy'

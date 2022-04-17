@@ -104,6 +104,20 @@ class codegen:
 
         self.write_file(conf_str, file)
 
+    def update_items(self, file=Path):
+
+        # Generate ITEMS
+        conf_str: List[str] = list()
+        conf_str.extend(PREAMBULA)
+        for device in self.devices:
+            items = device.get_items()
+
+            conf_str.extend(device.get_comment())
+            for item in items:
+                conf_str.extend(item.get_config())
+
+        self.write_file(conf_str, file)
+
 
     def run(self):
         """
@@ -129,6 +143,10 @@ class codegen:
 
         self.update_things(
             file=self.openhab_path / "gen_things.thing",
+        )
+
+        self.update_items(
+            file=self.openhab_path / "gen_items.item",
         )
 
 
