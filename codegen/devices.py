@@ -89,7 +89,7 @@ class DEVICES:
     IKEA_TRADFRI_MOTION_SENSOR = {
         'types': [
             'zigbee',
-            'motion',
+            'occupancy',
             'ikea',
             'activity',
             'battery',

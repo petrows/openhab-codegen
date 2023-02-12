@@ -16,6 +16,7 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
+    {'id': 'co2', 'title': 'CO₂ [%d %unit%]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch' },
     {'id': 'battery', 'title': '[%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%'},
     {'id': 'voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
@@ -58,6 +59,9 @@ class Device:
         else:
             raise RuntimeError("Item %s: cant find Name", config_device)
 
+        # Custom device ID (for MQTT topic)
+        if 'device_id' in config_device:
+            self.device_id = config_device['device_id']
 
         # Zigbee only: Zigbee address
         self.zigbee_id = config_device.get('zigbee_id', None)
@@ -157,6 +161,9 @@ class Device:
     def is_zigbee(self) -> bool:
         return np.in1d(['zigbee'], self.tags).any()
 
+    def is_petrows(self) -> bool:
+        return np.in1d(['petrows'], self.tags).any()
+
     def has_monitoring(self) -> bool:
         return np.in1d(['activity'], self.tags).any()
 
@@ -186,6 +193,10 @@ class Device:
         # Generate items list for Zigbee devices
         if self.is_zigbee():
             things.extend(self.get_things_zigbee())
+
+        # Generate items list for DIY devices
+        if self.is_petrows():
+            things.extend(self.get_things_petrows())
 
         return things
 
@@ -484,6 +495,75 @@ class Device:
                 'transformationPattern': 'REGEX:(.*"update_available".*)∩JSONPATH:$.update_available',
                 'on': 'true',
                 'off': 'false',
+            },
+        ))
+
+        # Get Thing
+
+        thing = MQTT_Thing(
+            id=self.id,
+            name=self.name,
+            broker=self.config['mqtt_broker_id'],
+            channels=channels,
+        )
+
+        return [thing]
+
+    def get_things_petrows(self) -> List[Thing]:
+        """
+            Things for DIY devices.
+            It has MQTT driven items, generate thing from this device
+        """
+
+        channels = []
+
+        state_topic = f"petrows/{self.device_id}"
+
+        # Device has switch (Lamp, Wall socket)
+        if self.has_tag('co2'):
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='co2',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'JSONPATH:$.S8.CO2',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='switch',
+                id='co2_led',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'JSONPATH:$.S8.led',
+                    'on': '1',
+                    'off': '0',
+                },
+            ))
+
+        # WiFi signal values
+        channels.append(MQTT_ThingChannel(
+            type='number',
+            id='rssi',
+            args={
+                'stateTopic': state_topic,
+                'transformationPattern': "JSONPATH:$.Wifi.RSSI",
+            },
+        ))
+        channels.append(MQTT_ThingChannel(
+            type='number',
+            id='bssid',
+            args={
+                'stateTopic': state_topic,
+                'transformationPattern': "JSONPATH:$.Wifi.BSSId",
+            },
+        ))
+        # Monitoring?
+        channels.append(MQTT_ThingChannel(
+            type='datetime',
+            id='activity',
+            args={
+                'stateTopic': state_topic,
+                'transformationPattern': "JS:codegen-activity.js",
             },
         ))
 
