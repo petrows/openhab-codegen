@@ -14,7 +14,8 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%' },
     {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure', 'unit': 'hPa' },
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
-    {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
+    {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door', 'channel_args':{'on':'true','off':'false'} },
+    {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch', 'icon': 'motion', 'channel_args':{'on':'true','off':'false'} },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
     {'id': 'co2', 'title': 'CO₂ [%d ppm]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
@@ -421,19 +422,6 @@ class Device:
                 },
             ))
 
-        # Device is Motion sensor
-        if self.has_tag('occupancy'):
-            channels.append(MQTT_ThingChannel(
-                type='switch',
-                id='occupancy',
-                args={
-                    'stateTopic': state_topic,
-                    'transformationPattern': 'REGEX:(.*"occupancy".*)∩JSONPATH:$.occupancy',
-                    'on': 'true',
-                    'off': 'false',
-                },
-            ))
-
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
                 args = {
@@ -442,6 +430,8 @@ class Device:
                 }
                 if 'unit' in metric:
                     args['unit'] = metric['unit']
+                if 'channel_args' in metric:
+                    args = args | metric['channel_args']
                 channels.append(MQTT_ThingChannel(
                     type=self.get_channel_type_from_item(metric),
                     id=metric['id'],
@@ -647,7 +637,7 @@ class Device:
                     id=f"{self.id}_activity",
                     name=f"{self.name} activity [JS(codegen-display-activity.js):%s]",
                     type='DateTime',
-                    icon='clock',
+                    icon='time',
                     groups=self.get_groups(type='activity'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id='activity',
@@ -690,22 +680,6 @@ class Device:
                     )
                 )
 
-        # Motion sensor
-        if self.has_tag('occupancy'):
-            items.append(
-                MQTT_Item(
-                    id=f"{self.id}_occupancy",
-                    name=f'{self.name} Motion [%s]',
-                    type='Switch',
-                    icon=self.get_icon(default='light'),
-                    groups=self.get_groups(type='occupancy'),
-                    expire=self.get_expire(),
-                    broker=self.config['mqtt_broker_id'],
-                    channel_id=f'{self.id}:occupancy',
-                    sitemap_type='Switch',
-                )
-            )
-
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
                 if 'icon' not in metric:
@@ -715,7 +689,7 @@ class Device:
                         id=f'{self.id}_{metric["id"]}',
                         name=f'{self.name} {metric["title"]}',
                         type=metric["type"],
-                        icon=self.get_icon(default=metric["id"]),
+                        icon=self.get_icon(default=metric["icon"]),
                         groups=self.get_groups(type=metric["id"]),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:{metric["id"]}',
