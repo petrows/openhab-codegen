@@ -18,7 +18,10 @@ class MQTT_ThingChannel:
         ) -> None:
         args_str = list()
         for k, v in args.items():
-            args_str.append(f"{k}=\"{v}\"")
+            if isinstance(v, str):
+                v = v.replace('"', '\\\"')
+                v = f'"{v}"'
+            args_str.append(f'{k}={v}')
         config = f"\t\tType {type} : {id} [{', '.join(args_str)}]"
         self.conf_str = [config]
 

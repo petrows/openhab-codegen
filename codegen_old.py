@@ -98,51 +98,51 @@ if __name__ == "__main__":
                 f"\tChannels:")
             zigbe_mqtt_topic = f"zigbee2mqtt/{item['id']}"
             # Device has switch option
-            if np.in1d(['lamp', 'plug'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType switch : state ["
-                    f"stateTopic=\"{zigbe_mqtt_topic}\""
-                    f", transformationPattern=\"JSONPATH:$.state\""
-                    f", commandTopic=\"{zigbe_mqtt_topic}/set\""
-                    f", transformationPatternOut=\"JS:z2m-command-state.js\""
-                    f"]"
-                )
+            # if np.in1d(['lamp', 'plug'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType switch : state ["
+            #         f"stateTopic=\"{zigbe_mqtt_topic}\""
+            #         f", transformationPattern=\"JSONPATH:$.state\""
+            #         f", commandTopic=\"{zigbe_mqtt_topic}/set\""
+            #         f", transformationPatternOut=\"JS:z2m-command-state.js\""
+            #         f"]"
+            #     )
             # Device has switch (multi-gang) option
-            if np.in1d(['plug_mt'], item['type']['types']).any():
-                # Iterate through avaliable channels
-                for channel_id, channel in item['channels'].items():
-                    conf_str.append(
-                        f"\t\tType switch : state_{channel_id} ["
-                        f"stateTopic=\"{zigbe_mqtt_topic}\""
-                        f", transformationPattern=\"JSONPATH:$.state_{channel_id}\""
-                        f", commandTopic=\"{zigbe_mqtt_topic}/set\""
-                        f", formatBeforePublish=\"{{\\\"state_{channel_id}\\\":\\\"%s\\\"}}\""
-                        f"]"
-                    )
+            # if np.in1d(['plug_mt'], item['type']['types']).any():
+            #     # Iterate through avaliable channels
+            #     for channel_id, channel in item['channels'].items():
+            #         conf_str.append(
+            #             f"\t\tType switch : state_{channel_id} ["
+            #             f"stateTopic=\"{zigbe_mqtt_topic}\""
+            #             f", transformationPattern=\"JSONPATH:$.state_{channel_id}\""
+            #             f", commandTopic=\"{zigbe_mqtt_topic}/set\""
+            #             f", formatBeforePublish=\"{{\\\"state_{channel_id}\\\":\\\"%s\\\"}}\""
+            #             f"]"
+            #         )
             # Device has remote option
-            if np.in1d(['remote'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType string : action [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.action\", trigger=true]")
+            # if np.in1d(['remote'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType string : action [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.action\", trigger=true]")
             # Device has dimmer
-            if np.in1d(['lamp'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType dimmer : dim ["
-                    f"stateTopic=\"{zigbe_mqtt_topic}\""
-                    f", transformationPattern=\"JSONPATH:$.brightness\""
-                    f", commandTopic=\"{zigbe_mqtt_topic}/set\""
-                    f", transformationPatternOut=\"JS:z2m-command-brightness.js\", min=1, max=255"
-                    f"]"
+            # if np.in1d(['lamp'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType dimmer : dim ["
+            #         f"stateTopic=\"{zigbe_mqtt_topic}\""
+            #         f", transformationPattern=\"JSONPATH:$.brightness\""
+            #         f", commandTopic=\"{zigbe_mqtt_topic}/set\""
+            #         f", transformationPatternOut=\"JS:z2m-command-brightness.js\", min=1, max=255"
+            #         f"]"
                 )
             # Device has Color Temp control
-            if np.in1d(['ct'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType dimmer : ct ["
-                    f"stateTopic=\"{zigbe_mqtt_topic}\""
-                    f", transformationPattern=\"JSONPATH:$.color_temp\""
-                    f", commandTopic=\"{zigbe_mqtt_topic}/set\""
-                    f", transformationPatternOut=\"JS:z2m-command-color_temp.js\", min=150, max=500"
-                    f"]"
-                )
+            # if np.in1d(['ct'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType dimmer : ct ["
+            #         f"stateTopic=\"{zigbe_mqtt_topic}\""
+            #         f", transformationPattern=\"JSONPATH:$.color_temp\""
+            #         f", commandTopic=\"{zigbe_mqtt_topic}/set\""
+            #         f", transformationPatternOut=\"JS:z2m-command-color_temp.js\", min=150, max=500"
+            #         f"]"
+            #     )
             # Device has Color control
             if np.in1d(['color'], item['type']['types']).any():
                 conf_str.append(
@@ -247,54 +247,54 @@ if __name__ == "__main__":
         }
         all_items.append(device_items)
 
-        # Tasmota devices
-        if np.in1d(['tasmota'], item['type']['types']).any():
-            # Iterate through avaliable channels
-            for channel in item['type']['tasmota_channels']:
-                channel_cfg = item['channels'][channel['id']]
-                device_icon = channel_cfg.get('icon', 'light')
-                if 'expire' in channel_cfg:
-                    device_timout = f", expire=\"{channel_cfg['expire']},command=OFF\""
-                conf_str.append(
-                    f"Switch {channel_cfg['id']} \"{channel_cfg['name']}\" <{device_icon}>"
-                    f"{device_groups(item, channel['id'])}"
-                    f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:{channel['id']}\"{device_timout}}}"
-                )
-                device_items['items'].append(f"Switch item={item['id']}")
+        # # Tasmota devices
+        # if np.in1d(['tasmota'], item['type']['types']).any():
+        #     # Iterate through avaliable channels
+        #     for channel in item['type']['tasmota_channels']:
+        #         channel_cfg = item['channels'][channel['id']]
+        #         device_icon = channel_cfg.get('icon', 'light')
+        #         if 'expire' in channel_cfg:
+        #             device_timout = f", expire=\"{channel_cfg['expire']},command=OFF\""
+        #         conf_str.append(
+        #             f"Switch {channel_cfg['id']} \"{channel_cfg['name']}\" <{device_icon}>"
+        #             f"{device_groups(item, channel['id'])}"
+        #             f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:{channel['id']}\"{device_timout}}}"
+        #         )
+        #         device_items['items'].append(f"Switch item={item['id']}")
 
         # Generic devices
 
-        # SOme device have switch (multi-gang) option
-        if np.in1d(['plug_mt'], item['type']['types']).any():
-            # Iterate through avaliable channels
-            for channel_id, channel in item['channels'].items():
-                device_icon = 'light'
-                if 'icon' in channel:
-                    device_icon = channel['icon']
-                device_timout = ''
-                if 'expire' in channel:
-                    device_timout = f", expire=\"{channel['expire']},command=OFF\""
-                conf_str.append(
-                    f"Switch {channel['id']}_sw \"{channel['name']}\" <{device_icon}>"
-                    f"{device_groups(channel,'sw')}"
-                    f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:state_{channel_id}\"{device_timout}}}"
-                )
-                device_items['items'].append(f"Switch item={channel['id']}_sw")
+        # # SOme device have switch (multi-gang) option
+        # if np.in1d(['plug_mt'], item['type']['types']).any():
+        #     # Iterate through avaliable channels
+        #     for channel_id, channel in item['channels'].items():
+        #         device_icon = 'light'
+        #         if 'icon' in channel:
+        #             device_icon = channel['icon']
+        #         device_timout = ''
+        #         if 'expire' in channel:
+        #             device_timout = f", expire=\"{channel['expire']},command=OFF\""
+        #         conf_str.append(
+        #             f"Switch {channel['id']}_sw \"{channel['name']}\" <{device_icon}>"
+        #             f"{device_groups(channel,'sw')}"
+        #             f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:state_{channel_id}\"{device_timout}}}"
+        #         )
+        #         device_items['items'].append(f"Switch item={channel['id']}_sw")
 
-        # Some devices have switch option
-        if np.in1d(['lamp', 'plug'], item['type']['types']).any():
-            device_icon = 'switch'
-            if 'lamp' in item['type']['types']:
-                device_icon = 'light'
-            device_timout = ''
-            if 'expire' in item:
-                device_timout = f", expire=\"{item['expire']},command=OFF\""
-            conf_str.append(
-                f"Switch {item['id']}_sw \"{item['name']}\" <{device_icon}>"
-                f"{device_groups(item,'sw')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:state\"{device_timout}}}"
-            )
-            device_items['items'].append(f"Switch item={item['id']}_sw")
+        # # Some devices have switch option
+        # if np.in1d(['lamp', 'plug'], item['type']['types']).any():
+        #     device_icon = 'switch'
+        #     if 'lamp' in item['type']['types']:
+        #         device_icon = 'light'
+        #     device_timout = ''
+        #     if 'expire' in item:
+        #         device_timout = f", expire=\"{item['expire']},command=OFF\""
+        #     conf_str.append(
+        #         f"Switch {item['id']}_sw \"{item['name']}\" <{device_icon}>"
+        #         f"{device_groups(item,'sw')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:state\"{device_timout}}}"
+        #    )
+        #    device_items['items'].append(f"Switch item={item['id']}_sw")
         # Some devices have thermostat
         if np.in1d(['thermostat'], item['type']['types']).any():
             device_icon = 'heatingt'
@@ -412,34 +412,34 @@ if __name__ == "__main__":
 
         # Special Zigbee things
         if np.in1d(['zigbee'], item['type']['types']).any():
-            # All Zigbee lamps have dimmer built-in
-            if np.in1d(['lamp'], item['type']['types']).any():
-                conf_str.append(
-                    f"Dimmer {item['id']}_dim \"{item['name']} DIM [%d %%]\" <{device_icon}>"
-                    f"{device_groups(item,'dim')}"
-                    f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:dim\"}}"
-                )
-                device_items['items'].append(f"Slider item={item['id']}_dim")
+            # # All Zigbee lamps have dimmer built-in
+            # if np.in1d(['lamp'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"Dimmer {item['id']}_dim \"{item['name']} DIM [%d %%]\" <{device_icon}>"
+            #         f"{device_groups(item,'dim')}"
+            #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:dim\"}}"
+            #     )
+            #     device_items['items'].append(f"Slider item={item['id']}_dim")
 
             # Zigbee color temperature
-            if np.in1d(['ct'], item['type']['types']).any():
-                conf_str.append(
-                    f"Dimmer {item['id']}_ct \"{item['name']} CT [JS(display-mired.js):%s]\" <colorwheel>"
-                    f"{device_groups(item,'ct')}"
-                    f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:ct\"}}"
-                )
-                device_items['items'].append(f"Slider item={item['id']}_ct")
-                gen_rules.append(
-                    f"""
-// Device should apply saved color temp when ON
-rule "{item['name']} apply color on ON"
-when
-    Item {item['id']}_sw changed to ON
-then
-	{item['id']}_ct.sendCommand({item['id']}_ct.state as Number)
-end
-"""
-                )
+#             if np.in1d(['ct'], item['type']['types']).any():
+#                 conf_str.append(
+#                     f"Dimmer {item['id']}_ct \"{item['name']} CT [JS(display-mired.js):%s]\" <colorwheel>"
+#                     f"{device_groups(item,'ct')}"
+#                     f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:ct\"}}"
+#                 )
+#                 device_items['items'].append(f"Slider item={item['id']}_ct")
+#                 gen_rules.append(
+#                     f"""
+# // Device should apply saved color temp when ON
+# rule "{item['name']} apply color on ON"
+# when
+#     Item {item['id']}_sw changed to ON
+# then
+# 	{item['id']}_ct.sendCommand({item['id']}_ct.state as Number)
+# end
+# """
+                # )
             # Zigbee color
             if np.in1d(['color'], item['type']['types']).any():
                 conf_str.append(

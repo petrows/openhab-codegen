@@ -3,7 +3,8 @@ from typing import List
 import numpy as np
 from codegen.item import Item, MQTT_Item
 from codegen.thing import *
-
+from pprint import pprint
+import json
 
 class Device:
     """
@@ -13,7 +14,9 @@ class Device:
     def __init__(self, config_device, config_type) -> None:
         self.type = config_type
         self.tags = config_type['types'] # Device 'tags'
-        self.channels = config_device.get('channels', list())
+        self.channels = config_device.get('channels', {})
+        self.expire = config_device.get('expire', None)
+        self.icon = config_device.get('icon', None)
 
         # Device ID
         # Simple: just use ID
@@ -71,20 +74,39 @@ class Device:
         )
         return conf_str
 
-    def get_groups(self, type: Str) -> List[Str]:
+    def get_expire(self, command='OFF') -> str:
+        return f'{self.expire},command={command}'
+
+    def get_channel_expire(self, channel: str, command='OFF') -> str:
+        if channel in self.channels and 'expire' in self.channels[channel]:
+            return f'{self.channels[channel]["expire"]},command={command}'
+        return None
+
+    def get_groups(self, type: str) -> List[str]:
         return list()
 
-    def get_channel_groups(self, channel: Str, type: Str) -> List[Str]:
+    def get_channel_groups(self, channel: str, type: str) -> List[str]:
         return list()
+
+    def get_icon(self, default='light') -> str:
+        if self.icon:
+            return self.icon
+        return default
 
     def is_tasmota(self) -> bool:
         return np.in1d(['tasmota'], self.tags).any()
 
+    def is_zigbee(self) -> bool:
+        return np.in1d(['zigbee'], self.tags).any()
+
     def has_monitoring(self) -> bool:
         return np.in1d(['activity'], self.tags).any()
 
-    def has_tag(self, tag: Str) -> bool:
+    def has_tag(self, tag: str) -> bool:
         return tag in self.tags
+
+    def has_tag_any(self, *tags) -> bool:
+        return np.in1d(tags, self.tags).any()
 
     def get_things(self) -> List[Thing]:
         """
@@ -96,6 +118,10 @@ class Device:
         # Generate items list for Tasmota devices
         if self.is_tasmota():
             things.extend(self.get_things_tasmota())
+
+        # Generate items list for Zigbee devices
+        if self.is_zigbee():
+            things.extend(self.get_things_zigbee())
 
         return things
 
@@ -180,6 +206,94 @@ class Device:
 
         return [thing]
 
+    def get_things_zigbee(self) -> List[Thing]:
+        """
+            Things for Zigbee.
+            It has MQTT driven items, generate thing from this device
+        """
+
+        channels = []
+
+        command_topic = f"zigbee2mqtt/{self.id}/set"
+        state_topic = f"zigbee2mqtt/{self.id}"
+
+        # Device has switch (Lamp, Wall socket)
+        if self.has_tag_any('lamp', 'plug'):
+            channels.append(MQTT_ThingChannel(
+                type='switch',
+                id='state',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'JSONPATH:$.state',
+                    'formatBeforePublish': json.dumps({'state': "%s", 'transition': 1}),
+                },
+            ))
+        # Device has switch (multi-gang) option
+        if self.has_tag('plug_mt'):
+            for channel_id, _ in self.channels.items():
+                channels.append(MQTT_ThingChannel(
+                    type='switch',
+                    id=f'state_{channel_id}',
+                    args={
+                        'stateTopic': state_topic,
+                        'commandTopic': command_topic,
+                        'transformationPattern': f'JSONPATH:$.state_{channel_id}',
+                        'formatBeforePublish': json.dumps({f'state_{channel_id}': "%s"})
+                    },
+                ))
+        # Lamps have dimmer
+        if self.has_tag('lamp'):
+            channels.append(MQTT_ThingChannel(
+                type='dimmer',
+                id='dim',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'JSONPATH:$.brightness',
+                    'formatBeforePublish': json.dumps({'brightness': "%d", 'transition': 3}),
+                    'min': 1,
+                    'max': 255,
+                },
+            ))
+        # Lamps have color temp?
+        if self.has_tag('ct'):
+            channels.append(MQTT_ThingChannel(
+                type='dimmer',
+                id='ct',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'JSONPATH:$.color_temp',
+                    'formatBeforePublish': json.dumps({'color_temp': "%d", 'transition': 3}),
+                    'min': 150,
+                    'max': 500,
+                },
+            ))
+        # Device is remote
+        if self.has_tag('remote'):
+            channels.append(MQTT_ThingChannel(
+                type='string',
+                id='action',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'JSONPATH:$.action',
+                    'trugger': 'true'
+                },
+            ))
+
+        # Get Thing
+
+        thing = MQTT_Thing(
+            id=self.id,
+            name=self.name,
+            broker=self.config['mqtt_broker_id'],
+            channels=channels,
+        )
+
+        return [thing]
+
     def get_items(self) -> List[Item]:
         """
             Prepare list of Items
@@ -190,6 +304,10 @@ class Device:
         # Generate items list for Tasmota devices
         if self.is_tasmota():
             items.extend(self.get_items_tasmota())
+
+        # Generate items list for Zigbee devices
+        if self.is_zigbee():
+            items.extend(self.get_items_zigbee())
 
         # Common items for devices
 
@@ -221,6 +339,41 @@ class Device:
                 )
             )
 
+        # Common devices
+
+        # Device has switch (Lamp, Wall socket)
+        if self.has_tag_any('lamp', 'plug'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_sw",
+                    name=self.name,
+                    type='Switch',
+                    icon=self.get_icon(default='light'),
+                    groups=self.get_groups(type='sw'),
+                    expire=self.get_expire(),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:state',
+                    sitemap_type='Switch',
+                )
+            )
+        # Multi-gang switch
+        if self.has_tag('plug_mt'):
+            for channel_id, channel in self.channels.items():
+                items.append(
+                    MQTT_Item(
+                        id=f'{channel["id"]}_sw',
+                        name=channel["name"],
+                        type='Switch',
+                        icon=self.get_icon(default='light'),
+                        groups=self.get_channel_groups(
+                            channel=channel_id, type='sw'),
+                        expire=self.get_channel_expire(channel=channel_id),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:state_{channel_id}',
+                        sitemap_type='Switch',
+                    )
+                )
+
         return items
 
     def get_items_tasmota(self) -> List[Item]:
@@ -240,11 +393,52 @@ class Device:
                         id=f"{channel_cfg['id']}_sw",
                         name=channel_cfg['name'],
                         type='Switch',
+                        icon=self.get_icon(default='light'),
                         groups=self.get_channel_groups(channel=channel['id'], type='sw'),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=channel['id'],
                         sitemap_type='Switch',
                     )
                 )
+
+        return items
+
+    def get_items_zigbee(self) -> List[Item]:
+        """
+            Things for Zigbee.
+            It has MQTT driven items, generate thing from this device
+        """
+
+        items = list()
+
+        # All zigbee lamps have dimmer
+        if self.has_tag('lamp'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_dim",
+                    name=f'{self.name} DIM [%d %%]',
+                    type='Dimmer',
+                    icon=self.get_icon(default='light'),
+                    groups=self.get_groups(type='dim'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:dim',
+                    sitemap_type='Slider',
+                )
+            )
+
+        # Some zigbee lamps have ct
+        if self.has_tag('ct'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_ct",
+                    name=f'{self.name} CT [JS(display-mired.js): %s]',
+                    type='Dimmer',
+                    icon=self.get_icon(default='light'),
+                    groups=self.get_groups(type='ct'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:ct',
+                    sitemap_type='Slider',
+                )
+            )
 
         return items

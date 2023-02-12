@@ -11,3 +11,40 @@ devices:
         groups:
           - g_light_all
           - g_light_kg
+
+  - name: Aldi test
+    id: aldi_test
+    zigbee_id: '0x60a423fffe4b91cf'
+    type: ALDI_FILAMENT
+    icon: light
+    expire: 1m
+    groups:
+      sw:
+      - g_light_all
+      - g_light_kg
+      - g_light_kg_hobbyraum
+      ct:
+      - g_light_astro_color
+
+  - name: KU Light SW
+    id: ku_light_switch
+    zigbee_id: '0x842e14fffe1267fb'
+    type: TUYA_WALL_SWITCH_TS0601
+    channels:
+      l1:
+        id: ku_light_switch_haupt
+        name: KU Light Haupt (Wall SW)
+        groups:
+          sw:
+          - g_light_all
+          - g_light_eg
+          - g_light_eg_ku
+      l2:
+        id: ku_light_switch_arbeit
+        name: KU Light Arbeit (Wall SW)
+        expire: 3h
+        groups:
+          sw:
+          - g_light_all
+          - g_light_eg
+          - g_light_eg_ku
