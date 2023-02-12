@@ -81,6 +81,9 @@ class Device:
         # Others: return device ID
         return self.id
 
+    def get_id(self) -> str:
+        return self.id
+
     def get_label(self) -> str:
         return f"{self.name} ({self.get_device_address()})"
 
@@ -117,6 +120,9 @@ class Device:
         if self.icon:
             return self.icon
         return default
+
+    def get_name(self) -> str:
+        return self.name
 
     def is_tasmota(self) -> bool:
         return np.in1d(['tasmota'], self.tags).any()

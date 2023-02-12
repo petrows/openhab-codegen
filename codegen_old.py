@@ -132,7 +132,7 @@ if __name__ == "__main__":
             #         f", commandTopic=\"{zigbe_mqtt_topic}/set\""
             #         f", transformationPatternOut=\"JS:z2m-command-brightness.js\", min=1, max=255"
             #         f"]"
-                )
+            #    )
             # Device has Color Temp control
             # if np.in1d(['ct'], item['type']['types']).any():
             #     conf_str.append(
@@ -144,15 +144,15 @@ if __name__ == "__main__":
             #         f"]"
             #     )
             # Device has Color control
-            if np.in1d(['color'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType color : color ["
-                    # f"stateTopic=\"{zigbe_mqtt_topic}\""
-                    # f", transformationPattern=\"JSONPATH:$.color_xy\""
-                    f", commandTopic=\"{zigbe_mqtt_topic}/set\""
-                    f", transformationPatternOut=\"JS:z2m-command-color_xy.js\""
-                    f"]"
-                )
+            # if np.in1d(['color'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType color : color ["
+            #         # f"stateTopic=\"{zigbe_mqtt_topic}\""
+            #         # f", transformationPattern=\"JSONPATH:$.color_xy\""
+            #         f", commandTopic=\"{zigbe_mqtt_topic}/set\""
+            #         f", transformationPatternOut=\"JS:z2m-command-color_xy.js\""
+            #         f"]"
+            #     )
             # Device has Thermostat control
             if np.in1d(['thermostat'], item['type']['types']).any():
                 conf_str.append(
@@ -165,10 +165,10 @@ if __name__ == "__main__":
                     f"]"
                 )
 
-            # Device has Position sensor
-            if np.in1d(['position'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType number : position [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.position\"]")
+            # # Device has Position sensor
+            # if np.in1d(['position'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType number : position [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.position\"]")
 
             # # Device has Contact sensor (inverse OPEN/CLOSE logic)
             # if np.in1d(['contact'], item['type']['types']).any():

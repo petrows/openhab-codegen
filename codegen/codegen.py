@@ -160,6 +160,16 @@ class codegen:
 
         self.write_file(conf_str, file)
 
+    def update_devices_yaml(self, file=Path):
+        # Generate devices.yaml
+        conf = {}
+        for device in self.devices:
+            if device.is_zigbee():
+                conf[device.get_device_address()] = {
+                    'friendly_name': device.get_id()
+                }
+
+        self.write_file(yaml.dump(conf).splitlines(), file)
 
     def run(self):
         """
@@ -203,4 +213,6 @@ class codegen:
             dir=self.openhab_path / "transform",
         )
 
-
+        self.update_devices_yaml(
+            file=self.openhab_path / "devices.yaml",
+        )
