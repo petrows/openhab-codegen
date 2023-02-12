@@ -374,6 +374,32 @@ class Device:
                     )
                 )
 
+        # Simple information channes, read only
+        simple_channels = [
+            {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
+            {'id': 'humidity', 'title': 'humidity  [%.0f %unit%]', 'type': 'Number:Dimensionless' },
+            {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure' },
+            {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
+            {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
+            {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating' },
+        ]
+        for metric in simple_channels:
+            if self.has_tag(metric['id']):
+                if 'icon' not in metric:
+                    metric['icon'] = metric['id']
+                items.append(
+                    MQTT_Item(
+                        id=f'{self.id}_{metric["id"]}',
+                        name=f'{self.name} {metric["title"]}',
+                        type=metric["type"],
+                        icon=self.get_icon(default=metric["id"]),
+                        groups=self.get_groups(type=metric["id"]),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:{metric["id"]}',
+                        sitemap_type='Text',
+                    )
+                )
+
         return items
 
     def get_items_tasmota(self) -> List[Item]:

@@ -338,42 +338,42 @@ if __name__ == "__main__":
             )
             device_items['items'].append(f"Text item={item['id']}_occupancy")
 
-        # Some devices have leak option
-        if np.in1d(['leak'], item['type']['types']).any():
-            device_icon = 'flow'
-            conf_str.append(
-                f"Switch {item['id']}_leak \"{item['name']}\" <{device_icon}>"
-                f"{device_groups(item,'leak')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:leak\"}}"
-            )
-        # Some devices have Temperature option
-        if np.in1d(['temperature'], item['type']['types']).any():
-            device_icon = 'temperature'
-            conf_str.append(
-                f"Number:Temperature {item['id']}_temperature \"{item['name']} [%.0f %unit%]\" <{device_icon}>"
-                f"{device_groups(item,'temperature')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:temperature\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_temperature")
+        # # Some devices have leak option
+        # if np.in1d(['leak'], item['type']['types']).any():
+        #     device_icon = 'flow'
+        #     conf_str.append(
+        #         f"Switch {item['id']}_leak \"{item['name']}\" <{device_icon}>"
+        #         f"{device_groups(item,'leak')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:leak\"}}"
+        #     )
+        # # Some devices have Temperature option
+        # if np.in1d(['temperature'], item['type']['types']).any():
+        #     device_icon = 'temperature'
+        #     conf_str.append(
+        #         f"Number:Temperature {item['id']}_temperature \"{item['name']} [%.0f %unit%]\" <{device_icon}>"
+        #         f"{device_groups(item,'temperature')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:temperature\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_temperature")
 
-        # Some devices have Humidity option
-        if np.in1d(['humidity'], item['type']['types']).any():
-            device_icon = 'humidity'
-            conf_str.append(
-                f"Number:Dimensionless {item['id']}_humidity \"{item['name']} [%.0f %%]\" <{device_icon}>"
-                f"{device_groups(item,'humidity')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:humidity\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_humidity")
-        # Some devices have Pressure option
-        if np.in1d(['pressure'], item['type']['types']).any():
-            device_icon = 'pressure'
-            conf_str.append(
-                f"Number:Pressure {item['id']}_pressure \"{item['name']} [%.0f %unit%]\" <{device_icon}>"
-                f"{device_groups(item,'pressure')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:pressure\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_pressure")
+        # # Some devices have Humidity option
+        # if np.in1d(['humidity'], item['type']['types']).any():
+        #     device_icon = 'humidity'
+        #     conf_str.append(
+        #         f"Number:Dimensionless {item['id']}_humidity \"{item['name']} [%.0f %%]\" <{device_icon}>"
+        #         f"{device_groups(item,'humidity')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:humidity\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_humidity")
+        # # Some devices have Pressure option
+        # if np.in1d(['pressure'], item['type']['types']).any():
+        #     device_icon = 'pressure'
+        #     conf_str.append(
+        #         f"Number:Pressure {item['id']}_pressure \"{item['name']} [%.0f %unit%]\" <{device_icon}>"
+        #         f"{device_groups(item,'pressure')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:pressure\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_pressure")
 
         # Special WiFi things
         # if np.in1d(['rssi'], item['type']['types']).any():

@@ -26,6 +26,11 @@ devices:
       ct:
       - g_light_astro_color
 
+  - name: Room temp (sleeping)
+    id: sz_climate
+    zigbee_id: '0xa4c1383cc92cbbd2'
+    type: TUYA_TEMPERATURE_SENSOR_TS0201
+
   - name: KU Light SW
     id: ku_light_switch
     zigbee_id: '0x842e14fffe1267fb'
