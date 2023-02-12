@@ -694,13 +694,13 @@ class Device:
                 channel_cfg = self.channels[channel['id']]
                 items.append(
                     MQTT_Item(
-                        id=f"{channel_cfg['id']}_sw",
+                        id=f"{channel_cfg['id']}",
                         name=channel_cfg['name'],
                         type='Switch',
                         icon=self.get_icon(default='light'),
                         groups=self.get_channel_groups(channel=channel['id'], type='sw'),
                         broker=self.config['mqtt_broker_id'],
-                        channel_id=channel['id'],
+                        channel_id=f'{self.id}:{channel["id"]}',
                         sitemap_type='Switch',
                     )
                 )
