@@ -46,6 +46,7 @@ class codegen:
             openhab_path:Path=None,
         ) -> None:
         self.write = write
+        self.self_path = Path(__file__).parent.parent
         self.openhab_path = openhab_path
         self.devices:List[Device] = list()
         pass
@@ -82,6 +83,8 @@ class codegen:
                     tofile=file.name,
                 )
             )
+        # Create directory
+        file.parent.mkdir(parents=True, exist_ok=True)
         # Write file...
         if self.write:
             with open(file, 'w') as f:
@@ -118,6 +121,15 @@ class codegen:
 
         self.write_file(conf_str, file)
 
+    def update_transform(self, dir=Path):
+        transform_src = Path(self.self_path / "transform")
+        transform_files = transform_src.iterdir()
+
+        dir.mkdir(parents=True, exist_ok=True)
+
+        for f in transform_files:
+            self.write_file(open(f).read().splitlines(), dir / f.name)
+
 
     def run(self):
         """
@@ -142,11 +154,15 @@ class codegen:
         logging.info("Processing %d devices", len(self.devices))
 
         self.update_things(
-            file=self.openhab_path / "gen_things.thing",
+            file=self.openhab_path / "things" / "gen_things.things",
         )
 
         self.update_items(
-            file=self.openhab_path / "gen_items.item",
+            file=self.openhab_path / "items" / "gen_items.items",
+        )
+
+        self.update_transform(
+            dir=self.openhab_path / "transform",
         )
 
 

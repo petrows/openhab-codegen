@@ -6,6 +6,19 @@ from codegen.thing import *
 from pprint import pprint
 import json
 
+# Simple information channes, read only (all devices)
+DEVICE_SIMPLE_CHANNELS = [
+    {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
+    {'id': 'humidity', 'title': 'humidity  [%.0f %unit%]', 'type': 'Number:Dimensionless' },
+    {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure' },
+    {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
+    {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
+    {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating' },
+    {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch' },
+    {'id': 'battery', 'title': '[%.0f %%]', 'type': 'Number:Dimensionless'},
+    {'id': 'voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy'},
+]
+
 class Device:
     """
         Represents device record from config
@@ -17,6 +30,7 @@ class Device:
         self.channels = config_device.get('channels', {})
         self.expire = config_device.get('expire', None)
         self.icon = config_device.get('icon', None)
+        self.groups = config_device.get('groups', {})
 
         # Device ID
         # Simple: just use ID
@@ -83,10 +97,16 @@ class Device:
         return None
 
     def get_groups(self, type: str) -> List[str]:
-        return list()
+        groups = ['g_all_' + type]
+        if type in self.groups:
+            groups.extend(self.groups[type])
+        return groups
 
     def get_channel_groups(self, channel: str, type: str) -> List[str]:
-        return list()
+        groups = ['g_all_' + type]
+        if 'groups' in self.channels[channel] and type in self.channels[channel]['groups']:
+            groups.extend(self.channels[channel]['groups'][type])
+        return groups
 
     def get_icon(self, default='light') -> str:
         if self.icon:
@@ -171,7 +191,7 @@ class Device:
                 id='activity',
                 args={
                     'stateTopic': state_topic,
-                    'transformationPattern': "JS:z2m-activity.js",
+                    'transformationPattern': "JS:codegen-activity.js",
                 },
             ))
 
@@ -278,10 +298,83 @@ class Device:
                 args={
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
-                    'transformationPattern': 'JSONPATH:$.action',
-                    'trugger': 'true'
+                    'transformationPattern': 'REGEX:(.*"action".*)∩JSONPATH:$.action',
+                    'trigger': 'true'
                 },
             ))
+
+        for metric in DEVICE_SIMPLE_CHANNELS:
+            if self.has_tag(metric['id']):
+                channels.append(MQTT_ThingChannel(
+                    type='string',
+                    id=metric['id'],
+                    args={
+                        'stateTopic': state_topic,
+                        'transformationPattern': f'REGEX:(.*"{metric["id"]}".*)∩JSONPATH:$.{metric["id"]}',
+                    },
+                ))
+
+        # Battery control
+        if self.has_tag('battery'):
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='battery',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'REGEX:(.*"battery".*)∩JSONPATH:$.battery',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='battery_low',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'REGEX:(.*"battery".*)∩JS:codegen-lowbatt.js',
+                },
+            ))
+        else:
+            if self.has_tag('battery_low'):
+                channels.append(MQTT_ThingChannel(
+                    type='number',
+                    id='battery_low',
+                    args={
+                        'stateTopic': state_topic,
+                        'transformationPattern': 'REGEX:(.*"battery_low".*)∩JSONPATH:$.battery_low',
+                        'on': 'true',
+                        'off': 'false',
+                    },
+                ))
+        # If device reports battery voltage, we can decide
+        if self.has_tag('battery_voltage'):
+            batt_type = self.type['batt_type']
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='battery',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': f'REGEX:(.*"battery".*)∩S:codegen-lowbatt-{batt_type}.js',
+                },
+            ))
+
+        # Zigbee channels
+        channels.append(MQTT_ThingChannel(
+            type='number',
+            id='link',
+            args={
+                'stateTopic': state_topic,
+                'transformationPattern': 'REGEX:(.*"linkquality".*)∩JSONPATH:$.linkquality',
+            },
+        ))
+        channels.append(MQTT_ThingChannel(
+            type='switch',
+            id='ota',
+            args={
+                'stateTopic': state_topic,
+                'transformationPattern': 'REGEX:(.*"update_available".*)∩JSONPATH:$.update_available',
+                'on': 'true',
+                'off': 'false',
+            },
+        ))
 
         # Get Thing
 
@@ -374,16 +467,7 @@ class Device:
                     )
                 )
 
-        # Simple information channes, read only
-        simple_channels = [
-            {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
-            {'id': 'humidity', 'title': 'humidity  [%.0f %unit%]', 'type': 'Number:Dimensionless' },
-            {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure' },
-            {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
-            {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
-            {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating' },
-        ]
-        for metric in simple_channels:
+        for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
                 if 'icon' not in metric:
                     metric['icon'] = metric['id']
@@ -457,7 +541,7 @@ class Device:
             items.append(
                 MQTT_Item(
                     id=f"{self.id}_ct",
-                    name=f'{self.name} CT [JS(display-mired.js): %s]',
+                    name=f'{self.name} CT [JS(codegen-mired.js): %s]',
                     type='Dimmer',
                     icon=self.get_icon(default='light'),
                     groups=self.get_groups(type='ct'),
@@ -466,5 +550,48 @@ class Device:
                     sitemap_type='Slider',
                 )
             )
+            # TODO: add rules for auto-ct
+
+        # Battery control
+        if self.has_tag_any('battery', 'battery_low', 'battery_voltage'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_sw",
+                    name=f'{self.name} [MAP(codegen-lowbat.map):%s]',
+                    type='Switch',
+                    icon='lowbattery',
+                    groups=self.get_groups(type='lowbattery'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:battery_low',
+                    sitemap_type='Switch',
+                )
+            )
+
+        # Common Zigbee channels
+        items.append(
+            MQTT_Item(
+                id=f"{self.id}_ota",
+                name=f'{self.name} OTA [%s]',
+                type='Switch',
+                icon='fire',
+                groups=self.get_groups(type='ota'),
+                broker=self.config['mqtt_broker_id'],
+                channel_id=f'{self.id}:ota',
+                sitemap_type='Switch',
+            )
+        )
+        items.append(
+            MQTT_Item(
+                id=f"{self.id}_link",
+                name=f'{self.name} LINK [%d]',
+                type='Number:Dimensionless',
+                icon='linkz',
+                groups=self.get_groups(type='link'),
+                broker=self.config['mqtt_broker_id'],
+                channel_id=f'{self.id}:link',
+                sitemap_type='Text',
+            )
+        )
+
 
         return items

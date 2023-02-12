@@ -6,7 +6,6 @@ from typing import Any
 
 from codegen.device import Device
 
-
 class DEVICES:
     """
         This staitc class: supported device registry

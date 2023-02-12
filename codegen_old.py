@@ -170,49 +170,49 @@ if __name__ == "__main__":
                 conf_str.append(
                     f"\t\tType number : position [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.position\"]")
 
-            # Device has Contact sensor (inverse OPEN/CLOSE logic)
-            if np.in1d(['contact'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType contact : contact [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.contact\", on=\"false\", off=\"true\"]")
+            # # Device has Contact sensor (inverse OPEN/CLOSE logic)
+            # if np.in1d(['contact'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType contact : contact [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.contact\", on=\"false\", off=\"true\"]")
 
-            # Device has Motion sensor
-            if np.in1d(['motion'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType switch : occupancy [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.occupancy\", on=\"true\", off=\"false\"]")
-            # Device has Leak sensor
-            if np.in1d(['leak'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType switch : leak [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.water_leak\", on=\"true\", off=\"false\"]")
-            # Device has Temp sensor
-            if np.in1d(['temperature'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType number : temperature [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JS:z2m-temperature.js\",unit=\"°C\"]")  # Could be different fields,sudo detect here
+            # # Device has Motion sensor
+            # if np.in1d(['motion'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType switch : occupancy [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.occupancy\", on=\"true\", off=\"false\"]")
+            # # Device has Leak sensor
+            # if np.in1d(['leak'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType switch : leak [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.water_leak\", on=\"true\", off=\"false\"]")
+            # # Device has Temp sensor
+            # if np.in1d(['temperature'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType number : temperature [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JS:z2m-temperature.js\",unit=\"°C\"]")  # Could be different fields,sudo detect here
 
-            if np.in1d(['humidity'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType number : humidity [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.humidity\"]")
-            if np.in1d(['pressure'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType number : pressure [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.pressure\",unit=\"hPa\"]")
+            # if np.in1d(['humidity'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType number : humidity [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.humidity\"]")
+            # if np.in1d(['pressure'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType number : pressure [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.pressure\",unit=\"hPa\"]")
             # Some zigbee devices needs to be monitored
-            if np.in1d(['activity'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType datetime : activity [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JS:z2m-activity.js\"]")
+            # if np.in1d(['activity'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType datetime : activity [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JS:z2m-activity.js\"]")
             # Some zigbee devices report battery OR battery_low signal
-            if np.in1d(['battery'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType number : battery [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JSONPATH:$.battery\"]")
-                conf_str.append(
-                    f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JS:z2m-lowbatt.js\"]")
-            else:
-                if np.in1d(['battery_low'], item['type']['types']).any():
-                    conf_str.append(
-                        f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.battery_low\", on=\"true\", off=\"false\"]")
-            # Some zigbee devices want custom battery signal
-            if np.in1d(['battery_voltage'], item['type']['types']).any():
-                batt_type = item['type']['batt_type']
-                conf_str.append(
-                    f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JS:z2m-batt-low-{batt_type}.js\"]")
+            # if np.in1d(['battery'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType number : battery [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JSONPATH:$.battery\"]")
+            #     conf_str.append(
+            #         f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JS:z2m-lowbatt.js\"]")
+            # else:
+            #     if np.in1d(['battery_low'], item['type']['types']).any():
+            #         conf_str.append(
+            #             f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JSONPATH:$.battery_low\", on=\"true\", off=\"false\"]")
+            # # Some zigbee devices want custom battery signal
+            # if np.in1d(['battery_voltage'], item['type']['types']).any():
+            #     batt_type = item['type']['batt_type']
+            #     conf_str.append(
+            #         f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JS:z2m-batt-low-{batt_type}.js\"]")
             # Some zigbee devices report battery voltage
             if np.in1d(['voltage'], item['type']['types']).any():
                 conf_str.append(
@@ -306,37 +306,37 @@ if __name__ == "__main__":
             device_items['items'].append(
                 f"Setpoint item={item['id']}_thermostat minValue=5 maxValue=30 step=1")
 
-        # Some devices have position option
-        if np.in1d(['position'], item['type']['types']).any():
-            device_icon = 'heating'
-            conf_str.append(
-                f"Number:Dimensionless {item['id']}_position \"{item['name']} POS [%.0f %%]\" <{device_icon}>"
-                f"{device_groups(item,'position')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:position\"}}"
-            )
-            device_items['items'].append(
-                f"Text item={item['id']}_position")
+        # # Some devices have position option
+        # if np.in1d(['position'], item['type']['types']).any():
+        #     device_icon = 'heating'
+        #     conf_str.append(
+        #         f"Number:Dimensionless {item['id']}_position \"{item['name']} POS [%.0f %%]\" <{device_icon}>"
+        #         f"{device_groups(item,'position')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:position\"}}"
+        #     )
+        #     device_items['items'].append(
+        #         f"Text item={item['id']}_position")
 
-        # Some devices have contact option
-        if np.in1d(['contact'], item['type']['types']).any():
-            device_icon = 'door'
-            conf_str.append(
-                f"Contact {item['id']}_contact \"{item['name']} contact [%s]\" <{device_icon}>"
-                f"{device_groups(item,'contact')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:contact\"}}"
-            )
-            device_items['items'].append(
-                f"Text item={item['id']}_contact")
+        # # Some devices have contact option
+        # if np.in1d(['contact'], item['type']['types']).any():
+        #     device_icon = 'door'
+        #     conf_str.append(
+        #         f"Contact {item['id']}_contact \"{item['name']} contact [%s]\" <{device_icon}>"
+        #         f"{device_groups(item,'contact')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:contact\"}}"
+        #     )
+        #     device_items['items'].append(
+        #         f"Text item={item['id']}_contact")
 
-        # Some devices have motion option
-        if np.in1d(['motion'], item['type']['types']).any():
-            device_icon = 'motion'
-            conf_str.append(
-                f"Switch {item['id']}_occupancy \"{item['name']}\" <{device_icon}>"
-                f"{device_groups(item,'occupancy')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:occupancy\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_occupancy")
+        # # Some devices have motion option
+        # if np.in1d(['motion'], item['type']['types']).any():
+        #     device_icon = 'motion'
+        #     conf_str.append(
+        #         f"Switch {item['id']}_occupancy \"{item['name']}\" <{device_icon}>"
+        #         f"{device_groups(item,'occupancy')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:occupancy\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_occupancy")
 
         # # Some devices have leak option
         # if np.in1d(['leak'], item['type']['types']).any():
@@ -394,21 +394,21 @@ if __name__ == "__main__":
         #     )
         #     device_items['items'].append(f"Text item={item['id']}_bssid")
 
-        if np.in1d(['la'], item['type']['types']).any():
-            device_icon = 'energy'
-            conf_str.append(
-                f"Number:Dimensionless {item['id']}_la \"{item['name']} LA [%d]\" <{device_icon}>"
-                f"{device_groups(item,'la')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:la\"}}"
-            )
-            device_items['items'].append(f"Text item={item['id']}_la")
+        # if np.in1d(['la'], item['type']['types']).any():
+        #     device_icon = 'energy'
+        #     conf_str.append(
+        #         f"Number:Dimensionless {item['id']}_la \"{item['name']} LA [%d]\" <{device_icon}>"
+        #         f"{device_groups(item,'la')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:la\"}}"
+        #     )
+        #     device_items['items'].append(f"Text item={item['id']}_la")
 
-        # Some devices report activity
-        if 'activity' in item['type']['types']:
-            conf_str.append(
-                f"DateTime {item['id']}_activity \"{item['name']} [JS(display-activity.js):%s]\""
-                f" <time> (g_device_activity) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:activity\"}}"
-            )
+        # # Some devices report activity
+        # if 'activity' in item['type']['types']:
+        #     conf_str.append(
+        #         f"DateTime {item['id']}_activity \"{item['name']} [JS(display-activity.js):%s]\""
+        #         f" <time> (g_device_activity) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:activity\"}}"
+        #     )
 
         # Special Zigbee things
         if np.in1d(['zigbee'], item['type']['types']).any():
@@ -449,40 +449,40 @@ if __name__ == "__main__":
                 )
                 device_items['items'].append(f"Colorpicker item={item['id']}_color")
 
-            # All zigbee devices have Link Quality reported
-            conf_str.append(
-                f"Number:Dimensionless {item['id']}_link \"{item['name']} LINK [%d]\""
-                f" <linkz> (g_zigbee_link) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:link\"}}"
-            )
-            device_items['items'].append(
-                f"Text item={item['id']}_link icon=\"linkz\"")
+            # # All zigbee devices have Link Quality reported
+            # conf_str.append(
+            #     f"Number:Dimensionless {item['id']}_link \"{item['name']} LINK [%d]\""
+            #     f" <linkz> (g_zigbee_link) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:link\"}}"
+            # )
+            # device_items['items'].append(
+            #     f"Text item={item['id']}_link icon=\"linkz\"")
 
-            # All zigbee devices probably have some OTA updates reported
-            conf_str.append(
-                f"Switch {item['id']}_ota \"{item['name']} OTA [%s]\""
-                f" <fire> (g_zigbee_ota) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:ota\"}}"
-            )
-            device_items['items'].append(
-                f"Text item={item['id']}_ota icon=\"fire\"")
+            # # All zigbee devices probably have some OTA updates reported
+            # conf_str.append(
+            #     f"Switch {item['id']}_ota \"{item['name']} OTA [%s]\""
+            #     f" <fire> (g_zigbee_ota) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:ota\"}}"
+            # )
+            # device_items['items'].append(
+            #     f"Text item={item['id']}_ota icon=\"fire\"")
 
-            # Some zigbee devices report battery
-            if 'battery' in item['type']['types']:
-                conf_str.append(
-                    f"Number:Dimensionless {item['id']}_battery \"{item['name']} [%.0f %%]\""
-                    f" <battery> (g_battery_level) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:battery\"}}"
-                )
-            if np.in1d(['battery', 'battery_low', 'battery_voltage'], item['type']['types']).any():
-                conf_str.append(
-                    f"Switch {item['id']}_battery_low \"{item['name']} [MAP(lowbat.map):%s]\""
-                    f" <lowbattery> (g_battery_low) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:battery_low\"}}"
-                )
+            # # Some zigbee devices report battery
+            # if 'battery' in item['type']['types']:
+            #     conf_str.append(
+            #         f"Number:Dimensionless {item['id']}_battery \"{item['name']} [%.0f %%]\""
+            #         f" <battery> (g_battery_level) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:battery\"}}"
+            #     )
+            # if np.in1d(['battery', 'battery_low', 'battery_voltage'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"Switch {item['id']}_battery_low \"{item['name']} [MAP(lowbat.map):%s]\""
+            #         f" <lowbattery> (g_battery_low) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:battery_low\"}}"
+            #     )
 
-            # ... and it's voltage
-            if 'voltage' in item['type']['types']:
-                conf_str.append(
-                    f"Number:ElectricPotential {item['id']}_voltage \"{item['name']} [%.0f mV]\""
-                    f" <energy> (g_battery_voltage) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:voltage\"}}"
-                )
+            # # ... and it's voltage
+            # if 'voltage' in item['type']['types']:
+            #     conf_str.append(
+            #         f"Number:ElectricPotential {item['id']}_voltage \"{item['name']} [%.0f mV]\""
+            #         f" <energy> (g_battery_voltage) {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:voltage\"}}"
+            #     )
 
         conf_str.append('')
     # Write config

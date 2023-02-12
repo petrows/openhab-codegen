@@ -1,5 +1,5 @@
 config:
-  mqtt_broker_id: my_broker_name
+  mqtt_broker_id: openhab
 devices:
   # Tasmota item
   - type: TASMOTA_SONOFF_MINI
