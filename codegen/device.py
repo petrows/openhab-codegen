@@ -406,7 +406,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"system_mode".*)∩JS:codegen-thermostat-enable.js',
-                    'formatBeforePublish': 'JS:codegen-cmd-thermostat-enable.js',
+                    'transformationPatternOut': 'JS:codegen-cmd-thermostat-enable.js',
                 },
             ))
 
