@@ -165,9 +165,10 @@ class codegen:
         conf = {}
         for device in self.devices:
             if device.is_zigbee():
-                conf[device.get_device_address()] = {
-                    'friendly_name': device.get_id()
-                }
+                device_conf = {}
+                device_conf['friendly_name'] = device.get_id()
+                device_conf = device_conf | device.get_zigbee_device_config()
+                conf[device.get_device_address()] = device_conf
 
         self.write_file(yaml.dump(conf).splitlines(), file)
 

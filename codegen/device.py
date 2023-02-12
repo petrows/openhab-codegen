@@ -81,6 +81,15 @@ class Device:
         # Others: return device ID
         return self.id
 
+    def get_zigbee_device_config(self):
+        """
+            This function returns additional config for devices.yaml
+        """
+        cfg = {}
+        if self.is_simulated_brightness():
+            cfg['simulated_brightness'] = []
+        return cfg
+
     def get_id(self) -> str:
         return self.id
 
@@ -123,6 +132,14 @@ class Device:
 
     def get_name(self) -> str:
         return self.name
+
+    def is_simulated_brightness(self) -> bool:
+        simulated = False # Default is no
+        if 'simulated_brightness' in self.config:
+            return self.config['simulated_brightness']
+        if 'simulated_brightness' in self.type:
+            return self.type['simulated_brightness']
+        return False
 
     def is_tasmota(self) -> bool:
         return np.in1d(['tasmota'], self.tags).any()
@@ -329,6 +346,18 @@ class Device:
                     'trigger': 'true'
                 },
             ))
+            # Simulate brightness?
+            if self.is_simulated_brightness():
+                channels.append(MQTT_ThingChannel(
+                    type='dimmer',
+                    id='dim',
+                    args={
+                        'stateTopic': state_topic,
+                        'transformationPattern': 'REGEX:(.*"brightness".*)∩JSONPATH:$.brightness',
+                        'min': 0,
+                        'max': 255,
+                    },
+                ))
 
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
@@ -603,6 +632,21 @@ class Device:
             template = environment.get_template("ct_rule.rules")
             self.rules.extend(template.render(item=self).splitlines())
 
+        if self.has_tag('remote'):
+            # Simulate brightness?
+            if self.is_simulated_brightness():
+                items.append(
+                    MQTT_Item(
+                        id=f"{self.id}_dim",
+                        name=f'{self.name} DIM [%d %%]',
+                        type='Dimmer',
+                        icon=self.get_icon(default='light'),
+                        groups=self.get_groups(type='dim'),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:dim',
+                        sitemap_type='Text',
+                    )
+                )
         # Battery control
         if self.has_tag_any('battery', 'battery_low', 'battery_voltage'):
             items.append(

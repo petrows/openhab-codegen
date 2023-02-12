@@ -139,6 +139,7 @@ class DEVICES:
             'ikea',
             'battery',
         ],
+        'simulated_brightness': True,
         'device_name': 'IKEA STYRBAR remote control N2',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2001_E2002.html',
     }
