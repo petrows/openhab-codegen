@@ -10,6 +10,7 @@ import jinja2
 # Simple information channes, read only (all devices)
 DEVICE_SIMPLE_CHANNELS = [
     {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
+    {'id': 'local_temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
     {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless' },
     {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure' },
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
@@ -135,6 +136,12 @@ class Device:
 
     def get_name(self) -> str:
         return self.name
+
+    def get_channel_type_from_item(self, item_type: str) -> str:
+        if 'Number' in item_type: return 'number'
+        if 'Switch' in item_type: return 'switch'
+        if 'Contact' in item_type: return 'contact'
+        return 'string'
 
     def is_simulated_brightness(self) -> bool:
         simulated = False # Default is no
@@ -369,11 +376,43 @@ class Device:
                         'max': 255,
                     },
                 ))
+        # Device is TRV
+        if self.has_tag('thermostat'):
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='thermostat',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'REGEX:(.*"current_heating_setpoint".*)∩JSONPATH:$.current_heating_setpoint',
+                    'transformationPatternOut': 'JS:codegen-cmd-thermostat-point.js',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='string',
+                id='thermostat_mode',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'REGEX:(.*"system_mode".*)∩JSONPATH:$.system_mode',
+                    'formatBeforePublish': json.dumps({'system_mode': '%s'})
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='switch',
+                id='thermostat_enable',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'REGEX:(.*"system_mode".*)∩JS:codegen-thermostat-enable.js',
+                    'formatBeforePublish': 'JS:codegen-cmd-thermostat-enable.js',
+                },
+            ))
 
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
                 channels.append(MQTT_ThingChannel(
-                    type='string',
+                    type=self.get_channel_type_from_item(metric['type']),
                     id=metric['id'],
                     args={
                         'stateTopic': state_topic,
@@ -665,6 +704,45 @@ class Device:
                         sitemap_type='Text',
                     )
                 )
+
+        if self.has_tag('thermostat'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_thermostat",
+                    name=f'{self.name} SET [%.0f %unit%]',
+                    type='Number:Temperature',
+                    icon='heatingt',
+                    groups=self.get_groups(type='thermostat'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:thermostat',
+                    sitemap_type='Setpoint',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_thermostat_mode",
+                    name=f'{self.name} MODE [%s]',
+                    type='String',
+                    icon='heatingt',
+                    groups=self.get_groups(type='thermostat_mode'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:thermostat_mode',
+                    sitemap_type='Text',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_thermostat_enable",
+                    name=f'{self.name} ENABLE [%s]',
+                    type='Switch',
+                    icon='heatingt',
+                    groups=self.get_groups(type='thermostat_enable'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:thermostat_enable',
+                    sitemap_type='Switch',
+                )
+            )
+
         # Battery control
         if self.has_tag_any('battery', 'battery_low', 'battery_voltage'):
             items.append(

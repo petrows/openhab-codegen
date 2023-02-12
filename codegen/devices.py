@@ -229,6 +229,7 @@ class DEVICES:
             'zigbee',
             'thermostat',
             'temperature',
+            'local_temperature',
             'position',
             'activity',
             # 'battery_low', # For using akkus - invalid battery level reporting
@@ -241,7 +242,7 @@ class DEVICES:
         'types': [
             'zigbee',
             'thermostat',
-            'temperature',
+            'local_temperature',
             'activity',
             'battery_low',
         ],
@@ -434,7 +435,7 @@ class DEVICES:
         'types': [
             'zigbee',
             'thermostat',
-            'temperature',
+            'local_temperature',
             'activity',
             'voltage',
             'battery_voltage',
@@ -449,7 +450,7 @@ class DEVICES:
         'types': [
             'zigbee',
             'thermostat',
-            'temperature',
+            'local_temperature',
             'activity',
             'battery',
         ],

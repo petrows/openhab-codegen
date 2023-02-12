@@ -296,15 +296,15 @@ if __name__ == "__main__":
         #    )
         #    device_items['items'].append(f"Switch item={item['id']}_sw")
         # Some devices have thermostat
-        if np.in1d(['thermostat'], item['type']['types']).any():
-            device_icon = 'heatingt'
-            conf_str.append(
-                f"Number:Temperature {item['id']}_thermostat \"{item['name']} SET [%.0f %unit%]\" <{device_icon}>"
-                f"{device_groups(item,'thermostat')}"
-                f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:thermostat\"}}"
-            )
-            device_items['items'].append(
-                f"Setpoint item={item['id']}_thermostat minValue=5 maxValue=30 step=1")
+        # if np.in1d(['thermostat'], item['type']['types']).any():
+        #     device_icon = 'heatingt'
+        #     conf_str.append(
+        #         f"Number:Temperature {item['id']}_thermostat \"{item['name']} SET [%.0f %unit%]\" <{device_icon}>"
+        #         f"{device_groups(item,'thermostat')}"
+        #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:thermostat\"}}"
+        #     )
+        #     device_items['items'].append(
+        #         f"Setpoint item={item['id']}_thermostat minValue=5 maxValue=30 step=1")
 
         # # Some devices have position option
         # if np.in1d(['position'], item['type']['types']).any():
