@@ -18,8 +18,7 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
     {'id': 'co2', 'title': 'CO₂ [%d %unit%]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch' },
-    {'id': 'battery', 'title': '[%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%'},
-    {'id': 'voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
+    {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
 ]
 
 class Device:
@@ -473,7 +472,7 @@ class Device:
             batt_type = self.type['batt_type']
             channels.append(MQTT_ThingChannel(
                 type='switch',
-                id='battery',
+                id='battery_low',
                 args={
                     'stateTopic': state_topic,
                     'transformationPattern': f'REGEX:(.*"battery".*)∩S:codegen-lowbat-{batt_type}.js',
