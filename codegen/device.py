@@ -16,8 +16,9 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
-    {'id': 'co2', 'title': 'CO₂ [%d %unit%]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
+    {'id': 'co2', 'title': 'CO₂ [%d ppm]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch' },
+    {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
 ]
 
@@ -437,16 +438,19 @@ class Device:
                     args=args,
                 ))
 
-        # Battery control
-        if self.has_tag('battery'):
+        # Monitoring?
+        if self.has_monitoring():
             channels.append(MQTT_ThingChannel(
-                type='number',
-                id='battery',
+                type='datetime',
+                id='activity',
                 args={
                     'stateTopic': state_topic,
-                    'transformationPattern': 'REGEX:(.*"battery".*)∩JSONPATH:$.battery',
+                    'transformationPattern': "JS:codegen-activity.js",
                 },
             ))
+
+        # Battery control
+        if self.has_tag('battery'):
             channels.append(MQTT_ThingChannel(
                 type='switch',
                 id='battery_low',
@@ -467,6 +471,7 @@ class Device:
                         'off': 'false',
                     },
                 ))
+
         # If device reports battery voltage, we can decide
         if self.has_tag('battery_voltage'):
             batt_type = self.type['batt_type']
@@ -621,6 +626,21 @@ class Device:
                     groups=self.get_groups(type='bssid'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id='bssid',
+                    sitemap_type='Text',
+                )
+            )
+
+        # Monitoring?
+        if self.has_monitoring():
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_activity",
+                    name=f"{self.name} activity [JS(codegen-display-activity.js):%s]",
+                    type='DateTime',
+                    icon='clock',
+                    groups=self.get_groups(type='activity'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id='activity',
                     sitemap_type='Text',
                 )
             )
@@ -835,7 +855,7 @@ class Device:
             items.append(
                 MQTT_Item(
                     id=f"{self.id}_lowbatt",
-                    name=f'{self.name} [MAP(codegen-lowbat.map):%s]',
+                    name=f'{self.name} BAT [MAP(codegen-lowbat.map):%s]',
                     type='Switch',
                     icon='lowbattery',
                     groups=self.get_groups(type='lowbattery'),
