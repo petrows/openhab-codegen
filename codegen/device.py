@@ -226,7 +226,7 @@ class Device:
             },
         ))
         channels.append(MQTT_ThingChannel(
-            type='number',
+            type='string',
             id='bssid',
             args={
                 'stateTopic': state_topic,
@@ -553,7 +553,7 @@ class Device:
             },
         ))
         channels.append(MQTT_ThingChannel(
-            type='number',
+            type='string',
             id='bssid',
             args={
                 'stateTopic': state_topic,
