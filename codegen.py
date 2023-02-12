@@ -86,32 +86,81 @@ items = [
         'zigbee_id': '0x00124b000b4ed5cc',
         'type': DEVICES.DIY_CC2540_ROUTER,
     },
-    # EG (Closet)
     {
-        'name': "BZ Light",
-        'id': "bz_light",
-        'zigbee_id': '0x086bd7fffefb619a',
-        'type': DEVICES.HEIMAN_SW_1_GANG,
+        'name': "EG Decor light",
+        'id': "eg_decoration_light",
+        'zigbee_id': '0x9035eafffe20e847',
+        'type': DEVICES.IKEA_TRADFRI_LAMP_W_250,
         'groups': {
-            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_bz'],
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_auto'],
+            'dim': ['g_dim_eg_auto'],
         }
     },
-    # EG (Nagel Studio)
+    {
+        'name': "Entrance Door sensor",
+        'id': "eg_main_door",
+        'zigbee_id': '0xa4c138182f60d651',
+        'type': DEVICES.TUYA_WINDOW_SENSOR_TS0203,
+    },
+    # EG (Closet)
+    {
+        'name': "BZ Light (toilet)",
+        'id': "bz_light_1",
+        'zigbee_id': '0xcc86ecfffea0c7cb',
+        'type': DEVICES.LIVARNO_CELLING,
+        'groups': {
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_bz', 'bz_main_light'],
+            'dim': ['g_light_bz_dim'],
+            'ct': ['g_light_astro_color', 'g_light_bz_ct'],
+            'color': ['g_light_bz_color'],
+        }
+    },
+    {
+        'name': "BZ Light (shower)",
+        'id': "bz_light_2",
+        'zigbee_id': '0x04cd15fffedb319f',
+        'type': DEVICES.LIVARNO_CELLING,
+        'groups': {
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_bz', 'bz_main_light'],
+            'dim': ['g_light_bz_dim'],
+            'ct': ['g_light_astro_color', 'g_light_bz_ct'],
+            'color': ['g_light_bz_color'],
+        }
+    },
+    {
+        'name': "BZ Mirror",
+        'id': "bz_mirror",
+        'type': DEVICES.TASMOTA_SONOFF_MINI,
+        'groups': {
+            'POWER': ['g_light_all', 'g_light_eg', 'g_light_eg_bz'],
+        },
+        'channels': {
+            'POWER': {
+                'id': 'bz_mirror',
+                'name': 'BZ Mirror',
+            }
+        }
+    },
+    {
+        'name': "BZ Mirror switch",
+        'id': "bz_mirror_switch",
+        'zigbee_id': '0xccccccfffef0356e',
+        'type': DEVICES.IKEA_TRADFRI_ON_OFF,
+    },
+    {
+        'name': "BZ Light Control",
+        'id': "bz_light_switch",
+        'zigbee_id': '0x003c84fffe132b20',
+        'type': DEVICES.IKEA_TRADFRI_STYRBAR,
+    },
+    # EG (Theater)
     {
         'name': "NS Climate",
         'id': "ns_climate",
         'zigbee_id': '0x00158d0001b95e08',
         'type': DEVICES.XIAOMI_AQARA_V2,
     },
-    {
-        'name': "FS Christmas light",
-        'id': "fs_christmas_light",
-        'zigbee_id': '0x7cb03eaa0a093a8b',
-        'type': DEVICES.OSRAM_SMART_PLUG,
-        'groups': {
-            'sw': ['g_light_christmas'],  # FIXME only for holidays!!!
-        }
-    },
+
     {
         'name': "NS Boost power",
         'id': "ns_heating_boost_power",
@@ -135,12 +184,12 @@ items = [
         'type': DEVICES.OSRAM_SMART_PLUG,
     },
     {
-        'name': "NS Christmas light",
-        'id': "ns_christmas_light",
-        'zigbee_id': '0x7cb03eaa0a09e7bc',
-        'type': DEVICES.OSRAM_SMART_PLUG,
+        'name': "NS Window 2",
+        'id': "ns_window_2",
+        'zigbee_id': '0xa4c138f1bf27592c',
+        'type': DEVICES.TUYA_WINDOW_SENSOR,
         'groups': {
-            'sw': ['g_light_christmas'],
+            'contact': ['ns_windows'],
         }
     },
     # EG (Foto Studio)
@@ -170,22 +219,57 @@ items = [
     {
         'name': "SZ Climate",
         'id': "sz_climate",
-        'zigbee_id': '0x00158d0001c19a6b',
-        'type': DEVICES.XIAOMI_AQARA_V1,
+        'zigbee_id': '0x847127fffec6acc3',
+        'type': DEVICES.TUYA_TEMPERATURE_SENSOR_TS0201,
     },
+    # Remotes in bed
     {
         'name': "Bedroom remote",
-        'id': "sz_remote",
+        'id': "sz_remote_bed",
         'zigbee_id': '0x14b457fffe7e2305',
         'type': DEVICES.IKEA_TRADFRI_REMOTE,
     },
     {
-        'name': "SZ Bad bottom lamp",
-        'id': "sz_bed_bottom_lamp",
-        'zigbee_id': '0x14b457fffe6383e5',
-        'type': DEVICES.IKEA_TRADFRI_LAMP_COLOR_600,
+        'name': "Bedroom curtains remote",
+        'id': "sz_curtain_remote",
+        'zigbee_id': '0x8cf681fffe36d14e',
+        'type': DEVICES.IKEA_TRADFRI_CURTAIN_REMOTE,
+    },
+    # Remote in room entry
+    {
+        'name': "Bedroom main remote",
+        'id': "sz_remote_main",
+        'zigbee_id': '0x003c84fffe16f988',
+        'type': DEVICES.IKEA_TRADFRI_STYRBAR,
+    },
+    {
+        'name': "SZ Main",
+        'id': "sz_main_light",
+        'zigbee_id': '0x588e81fffefe9a05',
+        'type': DEVICES.LIVARNO_CELLING_14147206L,
         'groups': {
             'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_sz'],
+            'ct': ['g_ct_treppe', 'g_light_astro_color'],
+        }
+    },
+    {
+        'name': "SZ Bed 1",
+        'id': "sz_bed_light_1",
+        'zigbee_id': '0x04cd15fffe7a35b5',
+        'type': DEVICES.IKEA_TRADFRI_LAMP_W_250,
+        'groups': {
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_sz', 'sz_bed_light'],
+            'dim': ['sz_bed_light_dim'],
+        }
+    },
+    {
+        'name': "SZ Bed 2",
+        'id': "sz_bed_light_2",
+        'zigbee_id': '0x9035eafffe1b9fcc',
+        'type': DEVICES.IKEA_TRADFRI_LAMP_W_250,
+        'groups': {
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_sz', 'sz_bed_light'],
+            'dim': ['sz_bed_light_dim'],
         }
     },
     {
@@ -218,6 +302,30 @@ items = [
             'dim': ['g_light_eg_sz_night_brightness', 'g_light_eg_sz_decor_brightness'],
         }
     },
+    {
+        'name': "SZ Window 1",
+        'id': "sz_window_1",
+        'zigbee_id': '0xa4c13804963f4ccf',
+        'type': DEVICES.TUYA_WINDOW_SENSOR,
+        'groups': {
+            'contact': ['sz_windows'],
+        }
+    },
+    {
+        'name': "SZ Window Door",
+        'id': "sz_window_door",
+        'zigbee_id': '0xa4c138fbdde6b200',
+        'type': DEVICES.TUYA_WINDOW_SENSOR,
+        'groups': {
+            'contact': ['sz_windows'],
+        }
+    },
+    {
+        'name': "SZ CO2",
+        'id': "sz_co2",
+        'type': DEVICES.PETROWS_CO2_SENSOR,
+        'device_id': '5C:CF:7F:68:19:46',
+    },
     # EG (Kitchen)
     {
         'name': "KU Climate",
@@ -244,7 +352,23 @@ items = [
         'type': DEVICES.SILVERCREST_SMART_PLUG,
         'expire': '3h',
         'groups': {
-            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku'],
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku', 'g_light_eg_ku_main'],
+        }
+    },
+    {
+        'name': "KU Light Table SW",
+        'id': "ku_light_table_switch",
+        'zigbee_id': '0x04cd15fffe789098',
+        'type': DEVICES.IKEA_TRADFRI_STYRBAR,
+    },
+    {
+        'name': "KU Light Table",
+        'id': "ku_light_table",
+        'zigbee_id': '0xec1bbdfffe4695b5',
+        'type': DEVICES.IKEA_TRADFRI_LAMP_W_806,
+        'groups': {
+            'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku', 'g_light_eg_auto'],
+            'dim': ['g_dim_eg_auto'],
         }
     },
     {
@@ -257,7 +381,7 @@ items = [
                 'id': 'ku_light_switch_haupt',
                 'name': 'KU Light Haupt (Wall SW)',
                 'groups': {
-                    'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku'],
+                    'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku', 'g_light_eg_ku_main'],
                 }
             },
             'l2': {
@@ -265,9 +389,18 @@ items = [
                 'name': 'KU Light Arbeit (Wall SW)',
                 'expire': '3h',
                 'groups': {
-                    'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku'],
+                    'sw': ['g_light_all', 'g_light_eg', 'g_light_eg_ku', 'g_light_eg_ku_main'],
                 }
             },
+        }
+    },
+    {
+        'name': "KU Window Door",
+        'id': "ku_window_door",
+        'zigbee_id': '0xa4c1389dec8b9204',
+        'type': DEVICES.TUYA_WINDOW_SENSOR,
+        'groups': {
+            'contact': ['ku_windows'],
         }
     },
     # Ladder (Treppe)
@@ -304,8 +437,8 @@ items = [
     {
         'name': "Treppe Down light",
         'id': "treppe_down_light",
-        'zigbee_id': '0x588e81fffe507b40',
-        'type': DEVICES.IKEA_TRADFRI_LAMP_CT_1000,
+        'zigbee_id': '0x04cd15fffedb31f7',
+        'type': DEVICES.LIVARNO_CELLING,
         'expire': '1h',
         'groups': {
             'sw': ['g_light_all', 'g_light_treppe', 'g_light_kg', 'g_light_kg_auto'],
@@ -333,6 +466,24 @@ items = [
         'type': DEVICES.TUYA_WINDOW_SENSOR,
         'groups': {
             'contact': ['kg_windows'],
+        }
+    },
+    {
+        'name': "KG Window 2",
+        'id': "kg_window_2",
+        'zigbee_id': '0xa4c1381a072fcf8b',
+        'type': DEVICES.TUYA_WINDOW_SENSOR,
+        'groups': {
+            'contact': ['kg_windows', 'g_windows_skip_off'],
+        }
+    },
+    {
+        'name': "KG Cabinet door",
+        'id': "kg_cabinet_door",
+        'zigbee_id': '0xa4c138312d2c455f',
+        'type': DEVICES.TUYA_WINDOW_SENSOR,
+        'groups': {
+            'contact': ['kg_windows', 'g_windows_skip_off'],
         }
     },
     {
@@ -385,16 +536,10 @@ items = [
         }
     },
     {
-        'name': "Petro Desktop AUX",
-        'id': "desktop_petro_aux_power",
-        'zigbee_id': '0x7cb03eaa0a094bf2',
-        'type': DEVICES.OSRAM_SMART_PLUG,
-    },
-    {
         'name': "Petro Desktop PC",
         'id': "desktop_petro_pc_power",
-        'zigbee_id': '0x7cb03eaa0a094303',
-        'type': DEVICES.OSRAM_SMART_PLUG,
+        'zigbee_id': '0x847127fffe0c873b',
+        'type': DEVICES.TUYA_SWITCH_TS0001,
     },
     {
         'name': "Petro Desktop remote",
@@ -449,19 +594,19 @@ items = [
     },
     # Garten wassering
     {
-        'name': "Garten wasser",
+        'name': "Garden water",
         'id': "garten_wasser_sw",
         'type': DEVICES.TASMOTA_SONOFF_MINI,
         'channels': {
             'POWER': {
                 'id': 'garten_wasser_sw',
-                'name': 'Garten wasser',
+                'name': 'Garden water',
                 'expire': '1h',
             }
         }
     },
     {
-        'name': "Garten wasser leak",
+        'name': "Warehouse 3 leak",
         'id': "garten_wasser_leak",
         'zigbee_id': '0x00158d0006b7aa81',
         'type': DEVICES.XIAOMI_AQARA_LEAK_V1,
@@ -481,6 +626,18 @@ items = [
                 'expire': '1h',
             }
         }
+    },
+    {
+        'name': "KG Lager 3 Climate",
+        'id': "kg_lager3_climate",
+        'zigbee_id': '0x00158d0001c19a6b',
+        'type': DEVICES.XIAOMI_AQARA_V2,
+    },
+    {
+        'name': "KG Lager 3 motion",
+        'id': "kg_lager3_motion",
+        'zigbee_id': '0x04cd15fffe873cb7',
+        'type': DEVICES.IKEA_TRADFRI_MOTION_SENSOR,
     },
     {
         'name': "KG Lager 3 (Haupt)",
@@ -547,7 +704,7 @@ items = [
         'type': DEVICES.IKEA_TRADFRI_MOTION_SENSOR,
     },
     {
-        'name': "KG Lager 4 leak",
+        'name': "Warehouse 4 leak",
         'id': "kg_lager4_leak",
         'zigbee_id': '0x00158d000488052c',
         'type': DEVICES.XIAOMI_AQARA_LEAK_V1,
@@ -556,8 +713,8 @@ items = [
     {
         'name': "FS heating",
         'id': "fs_heating",
-        'zigbee_id': '0x0c4314fffe73c43f',
-        'type': DEVICES.SILVERCREST_THERMOSTAT_368308_2010,
+        'zigbee_id': '0x9035eafffe712884',
+        'type': DEVICES.TUYA_THERMOSTAT_VALVE_3,
         'groups': {
             'thermostat': ['g_hz_all', 'g_hz_auto', 'g_hz_fs'],
             'position': ['g_hz_valve'],
@@ -586,10 +743,10 @@ items = [
     {
         'name': "SZ heating",
         'id': "sz_heating",
-        'zigbee_id': '0x5c0272fffec9d557',
-        'type': DEVICES.TUYA_THERMOSTAT_VALVE,
+        'zigbee_id': '0x0c4314fffe73c43f',
+        'type': DEVICES.SILVERCREST_THERMOSTAT_368308_2010,
         'groups': {
-            'thermostat': ['g_hz_all', 'g_hz_auto', 'g_hz_eg'],
+            'thermostat': ['g_hz_all', 'g_hz_auto', 'g_hz_sz'],
             'position': ['g_hz_valve'],
         }
     },
@@ -601,6 +758,36 @@ items = [
         'groups': {
             'thermostat': ['g_hz_all', 'g_hz_auto', 'g_hz_kg'],
             'position': ['g_hz_valve'],
+        }
+    },
+
+    # Christmas lights
+    # Set group g_light_christmas - only for holidays!!!
+    {
+        'name': "FS Christmas light",
+        'id': "fs_christmas_light",
+        'zigbee_id': '0x7cb03eaa0a093a8b',
+        'type': DEVICES.OSRAM_SMART_PLUG,
+        'groups': {
+            'sw': ['g_light_christmas'],
+        }
+    },
+    {
+        'name': "NS Christmas light",
+        'id': "ns_christmas_light",
+        'zigbee_id': '0x7cb03eaa0a094303',
+        'type': DEVICES.OSRAM_SMART_PLUG,
+        'groups': {
+            'sw': ['g_light_christmas'],
+        }
+    },
+    {
+        'name': "Balkon Christmas light",
+        'id': "balkon_christmas_light",
+        'zigbee_id': '0x7cb03eaa0a094bf2',
+        'type': DEVICES.OSRAM_SMART_PLUG,
+        'groups': {
+            'sw': ['g_light_christmas'],
         }
     },
 ]

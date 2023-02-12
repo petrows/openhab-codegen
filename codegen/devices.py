@@ -86,11 +86,23 @@ class DEVICES:
         'device_name': 'IKEA TRADFRI ON/OFF switch (E1743)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E1743.html',
     }
+    # The possible values are: on, off, brightness_move_down, brightness_move_up, brightness_stop
+    IKEA_TRADFRI_CURTAIN_REMOTE = {
+        'types': [
+            'zigbee',
+            'remote',
+            'ikea',
+            'battery',
+        ],
+        'device_name': 'IKEA TRADFRI open/close remote (E1766)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/E1766.html',
+    }
     # The possible values are: on, off, brightness_move_up, brightness_move_down, brightness_stop, arrow_left_click, arrow_right_click, arrow_left_hold, arrow_right_hold, arrow_left_release, arrow_right_release
     IKEA_TRADFRI_STYRBAR = {
         'types': [
             'zigbee',
             'remote',
+            'simulated_brightness',
             'ikea',
             'battery',
         ],
@@ -186,18 +198,43 @@ class DEVICES:
             'activity',
             # 'battery_low', # For using akkus - invalid battery level reporting
         ],
+        'thermostat_control_mode': "preset",  # Has "preset" option
         'device_name': 'TuYa Radiator valve with thermostat (TS0601_thermostat)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/TS0601_thermostat.html',
+    }
+    TUYA_THERMOSTAT_VALVE_3 = {
+        'types': [
+            'zigbee',
+            'thermostat',
+            'temperature',
+            'activity',
+            'battery_low',
+        ],
+        'thermostat_control_mode': "",
+        'device_name': 'TuYa Radiator valve with thermostat (TS0601_thermostat 3)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/TS0601_thermostat_3.html',
     }
     TUYA_WINDOW_SENSOR = {
         'types': [
             'zigbee',
             'contact',
+            'activity',
             'battery',
             'voltage',
         ],
         'device_name': 'TuYa Rechargeable Zigbee contact sensor (SNTZ007)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/SNTZ007.html',
+    }
+    TUYA_WINDOW_SENSOR_TS0203 = {
+        'types': [
+            'zigbee',
+            'contact',
+            'activity',
+            'battery',
+            'voltage',
+        ],
+        'device_name': 'TuYa Rechargeable Zigbee contact sensor (TS0203)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/TS0203.html#tuya-ts0203',
     }
     TUYA_TEMPERATURE_SENSOR_TS0201 = {
         'types': [
@@ -229,6 +266,14 @@ class DEVICES:
         'device_name': 'TS0601_switch - TuYa 1, 2, 3 or 4 gang switch (Router)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/TS0601_switch.html',
     }
+    TUYA_SWITCH_TS0001 = {
+        'types': [
+            'zigbee',
+            'plug',
+        ],
+        'device_name': 'Wall switch module',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/WHD02.html#tuya-whd02',
+    }
     # Lidl smart home - Silvercrest
     SILVERCREST_SMART_PLUG = {
         'types': [
@@ -237,6 +282,35 @@ class DEVICES:
         ],
         'device_name': 'Lidl Silvercrest smart plug (EU, CH, FR, BS, DK) (HG06337)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/HG06337.html',
+    }
+    SILVERCREST_SMART_BUTTON = {
+        'types': [
+            'zigbee',
+            'remote',
+            'battery',
+            'voltage',
+        ],
+        'device_name': 'Lidl Silvercrest smart button (HG08164)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/HG08164.html',
+    }
+    LIVARNO_CELLING = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ct',
+            'color',
+        ],
+        'device_name': 'Livarno Home LED ceiling light (HG08008)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/HG08008.html#lidl-hg08008',
+    }
+    LIVARNO_CELLING_14147206L = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ct',
+        ],
+        'device_name': 'Livarno Home Lux ceiling light (14147206L)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/14147206L.html#lidl-14147206l',
     }
     # DIY
     DIY_CC2540_ROUTER = {
@@ -302,6 +376,25 @@ class DEVICES:
             }
         ]
     }
+    # Wemos D1 + Senseair S8
+    # tele/sz_co2/SENSOR {"Time":"2023-01-27T17:41:07","S8":{"CarbonDioxide":1352}}
+    TASMOTA_WEMOS_CO2 = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+        ],
+        'device_name': 'ESP8266 + Senseair S8',
+        'device_url': '',
+        'tasmota_channels': [
+            {
+                'type': 'co2',
+                'id': 'S8',
+            },
+        ]
+    }
     SILVERCREST_THERMOSTAT_368308_2010 = {
         'types': [
             'zigbee',
@@ -312,6 +405,35 @@ class DEVICES:
             'battery_voltage',
         ],
         'batt_type': '1xAA', # Device reports value seems to be 'per element' (it has 2xAA)
+        'thermostat_control_mode': "preset",  # Has "preset" option
         'device_name': 'Silvercrest radiator valve with thermostat',
         'device_url': 'https://www.zigbee2mqtt.io/devices/368308_2010.html',
+    }
+    SITERWELL_THERMOSTAT_GS361A = {
+        'types': [
+            'zigbee',
+            'thermostat',
+            'temperature',
+            'activity',
+            'battery',
+        ],
+        # Device reports value seems to be 'per element' (it has 2xAA)
+        'batt_type': '1xAA',
+        'thermostat_control_mode': "",  # Device does not react on mode change
+        'device_name': 'Siterwell GS361A-H04 valve with thermostat',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/GS361A-H04.html',
+    }
+
+    # DIY devices by author
+
+    PETROWS_CO2_SENSOR = {
+        'types': [
+            'petrows',
+            'activity',
+            'co2',
+            'rssi',
+            'bssid',
+        ],
+        'device_name': 'Petro.ws CO₂ sensor module',
+        'device_url': 'https://github.com/petrows/smarthome-co2-module',
     }
