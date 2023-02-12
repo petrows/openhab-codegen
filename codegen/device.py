@@ -17,7 +17,6 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
     {'id': 'co2', 'title': 'CO₂ [%d ppm]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
-    {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch' },
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
 ]
@@ -142,8 +141,6 @@ class Device:
         return self.name
 
     def get_channel_type_from_item(self, item: dict) -> str:
-        if item['id'] == 'occupancy':
-            return 'contact'
         item_type = item['type']
         if 'Number' in item_type: return 'number'
         if 'Switch' in item_type: return 'switch'
@@ -424,6 +421,19 @@ class Device:
                 },
             ))
 
+        # Device is Motion sensor
+        if self.has_tag('occupancy'):
+            channels.append(MQTT_ThingChannel(
+                type='switch',
+                id='occupancy',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'REGEX:(.*"occupancy".*)∩JSONPATH:$.occupancy',
+                    'on': 'true',
+                    'off': 'false',
+                },
+            ))
+
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
                 args = {
@@ -679,6 +689,22 @@ class Device:
                         sitemap_type='Switch',
                     )
                 )
+
+        # Motion sensor
+        if self.has_tag('occupancy'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_occupancy",
+                    name=f'{self.name} Motion [%s]',
+                    type='Switch',
+                    icon=self.get_icon(default='light'),
+                    groups=self.get_groups(type='occupancy'),
+                    expire=self.get_expire(),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:occupancy',
+                    sitemap_type='Switch',
+                )
+            )
 
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
