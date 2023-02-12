@@ -520,7 +520,7 @@ class Device:
 
         channels = []
 
-        state_topic = f"petrows/{self.device_id}"
+        state_topic = f"petrows/{self.device_id}/STATE"
 
         # Device has switch (Lamp, Wall socket)
         if self.has_tag('co2'):
