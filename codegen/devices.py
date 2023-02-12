@@ -80,6 +80,7 @@ class DEVICES:
             'lamp',
             'ikea',
             'color',
+            'ct',
         ],
         'device_name': 'TRADFRI LED bulb E14/E26/E27 600 lumen, dimmable, color, opal white (ebay)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED1624G9.html',

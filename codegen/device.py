@@ -106,7 +106,10 @@ class Device:
         return conf_str
 
     def get_expire(self, command='OFF') -> str:
-        return f'{self.expire},command={command}'
+        if self.expire:
+            return f'{self.expire},command={command}'
+        else:
+            return None
 
     def get_channel_expire(self, channel: str, command='OFF') -> str:
         if channel in self.channels and 'expire' in self.channels[channel]:
@@ -304,7 +307,7 @@ class Device:
                 args={
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
-                    'transformationPattern': 'JSONPATH:$.brightness',
+                    'transformationPattern': 'REGEX:(.*"brightness".*)∩JSONPATH:$.brightness',
                     'transformationPatternOut': 'JS:codegen-cmd-brightness.js',
                     'min': 1,
                     'max': 255,
@@ -318,7 +321,7 @@ class Device:
                 args={
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
-                    'transformationPattern': 'JSONPATH:$.color_temp',
+                    'transformationPattern': 'REGEX:(.*"color_temp".*)∩JSONPATH:$.color_temp',
                     'transformationPatternOut': 'JS:codegen-cmd-color_temp.js',
                     'min': 150,
                     'max': 500,
@@ -332,6 +335,14 @@ class Device:
                 args={
                     'commandTopic': command_topic,
                     'transformationPatternOut': 'JS:codegen-cmd-color_xy.js',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='string',
+                id='color_mode',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'REGEX:(.*"color_mode".*)∩JSONPATH:$.color_mode',
                 },
             ))
         # Device is remote
@@ -623,14 +634,21 @@ class Device:
                     groups=self.get_groups(type='color'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:color',
-                    sitemap_type='Color',
+                    sitemap_type='Colorpicker',
                 )
             )
-            environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
-            template = environment.get_template("ct_rule_header.rules")
-            self.rules_header.extend(template.render(item=self).splitlines())
-            template = environment.get_template("ct_rule.rules")
-            self.rules.extend(template.render(item=self).splitlines())
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_color_mode",
+                    name=f'{self.name} Color mode',
+                    type='String',
+                    icon='colorwheel',
+                    groups=self.get_groups(type='color_mode'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:color_mode',
+                    sitemap_type='Text',
+                )
+            )
 
         if self.has_tag('remote'):
             # Simulate brightness?

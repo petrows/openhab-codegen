@@ -3,7 +3,7 @@ rule "{{ item.name }} apply color on ON"
 when
     Item {{ item.id }}_sw changed to ON
 then
-    val ct_set = {{ item.id }}_ct.state as Number).intValue
+    val ct_set = ({{ item.id }}_ct.state as Number).intValue
     {{ item.id }}_ct_timer = createTimer(now.plusSeconds(1), [ |
         {{ item.id }}_ct.sendCommand(ct_set)
     ])
