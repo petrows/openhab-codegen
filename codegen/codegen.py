@@ -130,6 +130,36 @@ class codegen:
         for f in transform_files:
             self.write_file(open(f).read().splitlines(), dir / f.name)
 
+    def update_rules(self, file=Path):
+        # Generate rules list
+        conf_str: List[str] = list()
+        conf_str.extend(PREAMBULA)
+        for device in self.devices:
+            conf_str.extend(device.get_rules_header())
+        conf_str.extend(['// ----------------------------'])
+        for device in self.devices:
+            conf_str.extend(device.get_rules())
+
+        self.write_file(conf_str, file)
+
+    def update_gen_sitemap(self, file=Path):
+        # Generate rules list
+        conf_str: List[str] = list()
+        conf_str.extend(PREAMBULA)
+        conf_str.extend(['sitemap gen label="GEN ITEMS"','{'])
+
+        for device in self.devices:
+            conf_str.extend([f'Frame label="{device.get_label()}" {{'])
+            items = device.get_items()
+            conf_str.extend(device.get_comment())
+            for item in items:
+                conf_str.extend(item.get_sitemap_config())
+            conf_str.extend(['}'])
+
+        conf_str.extend(['}'])
+
+        self.write_file(conf_str, file)
+
 
     def run(self):
         """
@@ -159,6 +189,14 @@ class codegen:
 
         self.update_items(
             file=self.openhab_path / "items" / "gen_items.items",
+        )
+
+        self.update_rules(
+            file=self.openhab_path / "rules" / "gen_auto.rules",
+        )
+
+        self.update_gen_sitemap(
+            file=self.openhab_path / "sitemaps" / "gen.sitemap",
         )
 
         self.update_transform(

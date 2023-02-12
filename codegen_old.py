@@ -214,17 +214,17 @@ if __name__ == "__main__":
             #     conf_str.append(
             #         f"\t\tType switch : battery_low [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*battery.*)∩JS:z2m-batt-low-{batt_type}.js\"]")
             # Some zigbee devices report battery voltage
-            if np.in1d(['voltage'], item['type']['types']).any():
-                conf_str.append(
-                    f"\t\tType number : voltage [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JS:z2m-batt-mv.js\",unit=\"V\"]")
-            # All zigbee devices have Link Quality reported
-            conf_str.append(
-                f"\t\tType number : link [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*linkquality.*)∩JSONPATH:$.linkquality\"]")
-            # All zigbee devices probably have some OTA updates reported
-            conf_str.append(
-                f"\t\tType switch : ota [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*update_available.*)∩JSONPATH:$.update_available\", on=\"true\", off=\"false\"]")
-            conf_str.append(
-                f"}}")
+            # if np.in1d(['voltage'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"\t\tType number : voltage [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"JS:z2m-batt-mv.js\",unit=\"V\"]")
+            # # All zigbee devices have Link Quality reported
+            # conf_str.append(
+            #     f"\t\tType number : link [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*linkquality.*)∩JSONPATH:$.linkquality\"]")
+            # # All zigbee devices probably have some OTA updates reported
+            # conf_str.append(
+            #     f"\t\tType switch : ota [stateTopic=\"{zigbe_mqtt_topic}\", transformationPattern=\"REGEX:(.*update_available.*)∩JSONPATH:$.update_available\", on=\"true\", off=\"false\"]")
+            # conf_str.append(
+            #     f"}}")
 
         conf_str.append('')
     # Write config

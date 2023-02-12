@@ -5,11 +5,12 @@ from codegen.item import Item, MQTT_Item
 from codegen.thing import *
 from pprint import pprint
 import json
+import jinja2
 
 # Simple information channes, read only (all devices)
 DEVICE_SIMPLE_CHANNELS = [
     {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
-    {'id': 'humidity', 'title': 'humidity  [%.0f %unit%]', 'type': 'Number:Dimensionless' },
+    {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless' },
     {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure' },
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
@@ -31,6 +32,10 @@ class Device:
         self.expire = config_device.get('expire', None)
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
+
+        # If device needs rules, we will store it here
+        self.rules_header = []
+        self.rules = []
 
         # Device ID
         # Simple: just use ID
@@ -127,6 +132,12 @@ class Device:
 
     def has_tag_any(self, *tags) -> bool:
         return np.in1d(tags, self.tags).any()
+
+    def get_rules(self) -> List[str]:
+        return self.rules
+
+    def get_rules_header(self) -> List[str]:
+        return self.rules_header
 
     def get_things(self) -> List[Thing]:
         """
@@ -271,7 +282,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'JSONPATH:$.brightness',
-                    'formatBeforePublish': json.dumps({'brightness': "%d", 'transition': 3}),
+                    'transformationPatternOut': 'JS:codegen-cmd-brightness.js',
                     'min': 1,
                     'max': 255,
                 },
@@ -285,7 +296,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'JSONPATH:$.color_temp',
-                    'formatBeforePublish': json.dumps({'color_temp': "%d", 'transition': 3}),
+                    'transformationPatternOut': 'JS:codegen-cmd-color_temp.js',
                     'min': 150,
                     'max': 500,
                 },
@@ -325,17 +336,17 @@ class Device:
                 },
             ))
             channels.append(MQTT_ThingChannel(
-                type='number',
+                type='switch',
                 id='battery_low',
                 args={
                     'stateTopic': state_topic,
-                    'transformationPattern': 'REGEX:(.*"battery".*)∩JS:codegen-lowbatt.js',
+                    'transformationPattern': 'REGEX:(.*"battery".*)∩JS:codegen-lowbat.js',
                 },
             ))
         else:
             if self.has_tag('battery_low'):
                 channels.append(MQTT_ThingChannel(
-                    type='number',
+                    type='switch',
                     id='battery_low',
                     args={
                         'stateTopic': state_topic,
@@ -348,11 +359,11 @@ class Device:
         if self.has_tag('battery_voltage'):
             batt_type = self.type['batt_type']
             channels.append(MQTT_ThingChannel(
-                type='number',
+                type='switch',
                 id='battery',
                 args={
                     'stateTopic': state_topic,
-                    'transformationPattern': f'REGEX:(.*"battery".*)∩S:codegen-lowbatt-{batt_type}.js',
+                    'transformationPattern': f'REGEX:(.*"battery".*)∩S:codegen-lowbat-{batt_type}.js',
                 },
             ))
 
@@ -550,20 +561,24 @@ class Device:
                     sitemap_type='Slider',
                 )
             )
-            # TODO: add rules for auto-ct
+            environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
+            template = environment.get_template("ct_rule_header.rules")
+            self.rules_header.extend(template.render(item=self).splitlines())
+            template = environment.get_template("ct_rule.rules")
+            self.rules.extend(template.render(item=self).splitlines())
 
         # Battery control
         if self.has_tag_any('battery', 'battery_low', 'battery_voltage'):
             items.append(
                 MQTT_Item(
-                    id=f"{self.id}_sw",
+                    id=f"{self.id}_lowbatt",
                     name=f'{self.name} [MAP(codegen-lowbat.map):%s]',
                     type='Switch',
                     icon='lowbattery',
                     groups=self.get_groups(type='lowbattery'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:battery_low',
-                    sitemap_type='Switch',
+                    sitemap_type='Text',
                 )
             )
 
@@ -577,7 +592,7 @@ class Device:
                 groups=self.get_groups(type='ota'),
                 broker=self.config['mqtt_broker_id'],
                 channel_id=f'{self.id}:ota',
-                sitemap_type='Switch',
+                sitemap_type='Text',
             )
         )
         items.append(
