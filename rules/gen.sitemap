@@ -1,4 +1,0 @@
-sitemap gen label="GEN ITEMS"
-{
-    {{ data }}
-}

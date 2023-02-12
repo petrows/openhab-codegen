@@ -440,14 +440,14 @@ if __name__ == "__main__":
 # end
 # """
                 # )
-            # Zigbee color
-            if np.in1d(['color'], item['type']['types']).any():
-                conf_str.append(
-                    f"Color {item['id']}_color \"{item['name']} Color\" <colorwheel>"
-                    f"{device_groups(item,'color')}"
-                    f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:color\"}}"
-                )
-                device_items['items'].append(f"Colorpicker item={item['id']}_color")
+            # # Zigbee color
+            # if np.in1d(['color'], item['type']['types']).any():
+            #     conf_str.append(
+            #         f"Color {item['id']}_color \"{item['name']} Color\" <colorwheel>"
+            #         f"{device_groups(item,'color')}"
+            #         f" {{channel=\"mqtt:topic:openhab:{item['mqtt_topic']}:color\"}}"
+            #     )
+            #     device_items['items'].append(f"Colorpicker item={item['id']}_color")
 
             # # All zigbee devices have Link Quality reported
             # conf_str.append(

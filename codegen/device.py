@@ -301,6 +301,16 @@ class Device:
                     'max': 500,
                 },
             ))
+        # Lamps have color?
+        if self.has_tag('color'):
+            channels.append(MQTT_ThingChannel(
+                type='color',
+                id='color',
+                args={
+                    'commandTopic': command_topic,
+                    'transformationPatternOut': 'JS:codegen-cmd-color_xy.js',
+                },
+            ))
         # Device is remote
         if self.has_tag('remote'):
             channels.append(MQTT_ThingChannel(
@@ -559,6 +569,26 @@ class Device:
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:ct',
                     sitemap_type='Slider',
+                )
+            )
+            environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
+            template = environment.get_template("ct_rule_header.rules")
+            self.rules_header.extend(template.render(item=self).splitlines())
+            template = environment.get_template("ct_rule.rules")
+            self.rules.extend(template.render(item=self).splitlines())
+
+        # Some zigbee lamps have color
+        if self.has_tag('color'):
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_color",
+                    name=f'{self.name} Color',
+                    type='Color',
+                    icon='colorwheel',
+                    groups=self.get_groups(type='color'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:color',
+                    sitemap_type='Color',
                 )
             )
             environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
