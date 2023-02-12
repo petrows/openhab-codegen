@@ -141,7 +141,10 @@ class Device:
     def get_name(self) -> str:
         return self.name
 
-    def get_channel_type_from_item(self, item_type: str) -> str:
+    def get_channel_type_from_item(self, item: dict) -> str:
+        if item['id'] == 'occupancy':
+            return 'contact'
+        item_type = item['type']
         if 'Number' in item_type: return 'number'
         if 'Switch' in item_type: return 'switch'
         if 'Contact' in item_type: return 'contact'
@@ -430,7 +433,7 @@ class Device:
                 if 'unit' in metric:
                     args['unit'] = metric['unit']
                 channels.append(MQTT_ThingChannel(
-                    type=self.get_channel_type_from_item(metric['type']),
+                    type=self.get_channel_type_from_item(metric),
                     id=metric['id'],
                     args=args,
                 ))
