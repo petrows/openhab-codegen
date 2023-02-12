@@ -9,16 +9,16 @@ import jinja2
 
 # Simple information channes, read only (all devices)
 DEVICE_SIMPLE_CHANNELS = [
-    {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
-    {'id': 'local_temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature' },
-    {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless' },
-    {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure' },
+    {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
+    {'id': 'local_temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
+    {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%' },
+    {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure', 'unit': 'hPa' },
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow' },
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door' },
-    {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating' },
+    {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
     {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch' },
-    {'id': 'battery', 'title': '[%.0f %%]', 'type': 'Number:Dimensionless'},
-    {'id': 'voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy'},
+    {'id': 'battery', 'title': '[%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%'},
+    {'id': 'voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
 ]
 
 class Device:
@@ -386,6 +386,7 @@ class Device:
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"current_heating_setpoint".*)∩JSONPATH:$.current_heating_setpoint',
                     'transformationPatternOut': 'JS:codegen-cmd-thermostat-point.js',
+                    'unit': 'C°',
                 },
             ))
             channels.append(MQTT_ThingChannel(
@@ -411,13 +412,16 @@ class Device:
 
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
+                args = {
+                    'stateTopic': state_topic,
+                    'transformationPattern': f'REGEX:(.*"{metric["id"]}".*)∩JSONPATH:$.{metric["id"]}',
+                }
+                if 'unit' in metric:
+                    args['unit'] = metric['unit']
                 channels.append(MQTT_ThingChannel(
                     type=self.get_channel_type_from_item(metric['type']),
                     id=metric['id'],
-                    args={
-                        'stateTopic': state_topic,
-                        'transformationPattern': f'REGEX:(.*"{metric["id"]}".*)∩JSONPATH:$.{metric["id"]}',
-                    },
+                    args=args,
                 ))
 
         # Battery control
@@ -459,6 +463,7 @@ class Device:
                 args={
                     'stateTopic': state_topic,
                     'transformationPattern': f'REGEX:(.*"battery".*)∩S:codegen-lowbat-{batt_type}.js',
+                    'unit': 'mV',
                 },
             ))
 
