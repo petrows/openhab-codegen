@@ -17,7 +17,7 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door', 'channel_args': {'on':'false','off':'true'} },
     {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch', 'icon': 'motion', 'channel_args': {'on':'true','off':'false'} },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
-    {'id': 'co2', 'title': 'CO₂ [%d ppm]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
+    {'id': 'co2', 'title': 'CO₂ [%d %unit%]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
 ]
@@ -526,7 +526,7 @@ class Device:
 
         state_topic = f"petrows/{self.device_id}/STATE"
 
-        # Device has switch (Lamp, Wall socket)
+        # Device is DiY CO₂ sensor
         if self.has_tag('co2'):
             channels.append(MQTT_ThingChannel(
                 type='number',
@@ -534,6 +534,7 @@ class Device:
                 args={
                     'stateTopic': state_topic,
                     'transformationPattern': 'JSONPATH:$.S8.CO2',
+                    'unit': 'ppm',
                 },
             ))
             channels.append(MQTT_ThingChannel(
