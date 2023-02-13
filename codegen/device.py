@@ -384,7 +384,7 @@ class Device:
                     id='dim',
                     args={
                         'stateTopic': state_topic,
-                        'transformationPattern': 'REGEX:(.*"brightness".*)∩JSONPATH:$.brightness',
+                        'transformationPattern': 'REGEX:(.*"action_brightness_delta".*)∩JSONPATH:$.brightness',
                         'min': 0,
                         'max': 255,
                     },
