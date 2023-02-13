@@ -468,6 +468,7 @@ class DEVICES:
             'petrows',
             'activity',
             'co2',
+            'co2_led',
             'rssi',
             'bssid',
         ],
