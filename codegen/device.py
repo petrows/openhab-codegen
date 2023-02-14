@@ -64,6 +64,14 @@ class Device:
         if 'device_id' in config_device:
             self.device_id = config_device['device_id']
 
+        # Custom device options
+        # Brightness limits (we have minimal default is 1 - to ensure ON state)
+        self.brightness_min = self.type.get('dim_min', 1)
+        self.brightness_max = self.type.get('dim_max', 254)
+        # Color limits (Mired)
+        self.ct_min = self.type.get('ct_min', 150)
+        self.ct_max = self.type.get('ct_max', 500)
+
         # Zigbee only: Zigbee address
         self.zigbee_id = config_device.get('zigbee_id', None)
 
@@ -329,12 +337,13 @@ class Device:
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JSONPATH:$.brightness',
                     'transformationPatternOut': 'JS:codegen-cmd-brightness.js',
-                    'min': 1,
-                    'max': 255,
+                    'min': self.brightness_min,  # Dedvice type could change that
+                    'max': self.brightness_max,
                 },
             ))
         # Lamps have color temp?
         if self.has_tag('ct'):
+            js_transform = 'codegen-cmd-color_temp'
             channels.append(MQTT_ThingChannel(
                 type='dimmer',
                 id='ct',
@@ -342,9 +351,9 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"color_temp".*)∩JSONPATH:$.color_temp',
-                    'transformationPatternOut': 'JS:codegen-cmd-color_temp.js',
-                    'min': 150,
-                    'max': 500,
+                    'transformationPatternOut': f'JS:{js_transform}.js',
+                    'min': self.ct_min,
+                    'max': self.ct_max,
                 },
             ))
         # Lamps have color?
