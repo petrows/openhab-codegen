@@ -59,6 +59,19 @@ class DEVICES:
         'ct_min': 250,
         'ct_max': 454,
     }
+    IKEA_TRADFRI_LAMP_LED2003G10 = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ikea',
+            'ct',
+        ],
+        'device_name': 'IKEA TRADFRI LED bulb E26/27 1100/1055/1160 lumen, dimmable, white spectrum, opal white (LED2003G10)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/LED2003G10.html',
+        'dim_min': 2,  # Device turns OFF on brightness = 1, enlarge limit to 2
+        'ct_min': 250,
+        'ct_max': 454,
+    }
     IKEA_TRADFRI_LAMP_LED1546G12 = {
         'types': [
             'zigbee',
