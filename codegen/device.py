@@ -506,6 +506,17 @@ class Device:
             },
         ))
 
+        # Monitoring?
+        if self.has_monitoring():
+            channels.append(MQTT_ThingChannel(
+                type='datetime',
+                id='activity',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': "JS:codegen-activity.js",
+                },
+            ))
+
         # Get Thing
 
         thing = MQTT_Thing(
@@ -567,14 +578,15 @@ class Device:
             },
         ))
         # Monitoring?
-        channels.append(MQTT_ThingChannel(
-            type='datetime',
-            id='activity',
-            args={
-                'stateTopic': state_topic,
-                'transformationPattern': "JS:codegen-activity.js",
-            },
-        ))
+        if self.has_monitoring():
+            channels.append(MQTT_ThingChannel(
+                type='datetime',
+                id='activity',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': "JS:codegen-activity.js",
+                },
+            ))
 
         # Get Thing
 
