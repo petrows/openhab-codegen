@@ -626,7 +626,7 @@ class Device:
                     icon='network',
                     groups=self.get_groups(type='rssi'),
                     broker=self.config['mqtt_broker_id'],
-                    channel_id='rssi',
+                    channel_id=f'{self.id}:rssi',
                     sitemap_type='Text',
                 )
             )
@@ -639,7 +639,7 @@ class Device:
                     icon='network',
                     groups=self.get_groups(type='bssid'),
                     broker=self.config['mqtt_broker_id'],
-                    channel_id='bssid',
+                    channel_id=f'{self.id}:bssid',
                     sitemap_type='Text',
                 )
             )
@@ -654,7 +654,7 @@ class Device:
                     icon='time',
                     groups=self.get_groups(type='activity'),
                     broker=self.config['mqtt_broker_id'],
-                    channel_id='activity',
+                    channel_id=f'{self.id}:activity',
                     sitemap_type='Text',
                 )
             )
