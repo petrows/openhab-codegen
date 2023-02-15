@@ -45,7 +45,7 @@ class DEVICES:
         ],
         'device_name': 'IKEA TRADFRI LED bulb E27 806 lumen, dimmable, white spectrum, clear (LED1736G9)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED1736G9.html',
-        'ct_max': 454,
+        # 'ct_max': 454,
     }
     IKEA_TRADFRI_LAMP_CT_1000 = {
         'types': [
@@ -56,8 +56,8 @@ class DEVICES:
         ],
         'device_name': 'IKEA TRADFRI LED bulb E27 1000 lumen, dimmable, white spectrum, opal white (LED1732G11)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED1732G11.html',
-        'ct_min': 250,
-        'ct_max': 454,
+        # 'ct_min': 250,
+        # 'ct_max': 454,
     }
     IKEA_TRADFRI_LAMP_LED2003G10 = {
         'types': [
@@ -69,8 +69,8 @@ class DEVICES:
         'device_name': 'IKEA TRADFRI LED bulb E26/27 1100/1055/1160 lumen, dimmable, white spectrum, opal white (LED2003G10)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED2003G10.html',
         'dim_min': 2,  # Device turns OFF on brightness = 1, enlarge limit to 2
-        'ct_min': 250,
-        'ct_max': 454,
+        # 'ct_min': 250,
+        # 'ct_max': 454,
     }
     IKEA_TRADFRI_LAMP_LED1546G12 = {
         'types': [
@@ -83,8 +83,8 @@ class DEVICES:
         'device_name': 'TRADFRI LED bulb E26/E27 950 lumen, dimmable, white spectrum, clear (LED1546G12)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED1546G12.html',
         'dim_min': 2, # Device turns OFF on brightness = 1, enlarge limit to 2
-        'ct_min': 250,
-        'ct_max': 454,
+        # 'ct_min': 250,
+        # 'ct_max': 454,
     }
     IKEA_TRADFRI_LAMP_W_806 = {
         'types': [
@@ -114,7 +114,7 @@ class DEVICES:
         ],
         'device_name': 'TRADFRI LED bulb E14/E26/E27 600 lumen, dimmable, color, opal white (ebay)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED1624G9.html',
-        'ct_max': 454,
+        # 'ct_max': 454,
     }
     # IKEA Motion
     IKEA_TRADFRI_MOTION_SENSOR = {
