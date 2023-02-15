@@ -138,8 +138,8 @@ class Device:
 
     def get_channel_groups(self, channel: str, type: str) -> List[str]:
         groups = ['g_all_' + type]
-        if channel in self.groups:
-            groups.extend(self.groups[channel])
+        if channel in self.channels and 'groups' in self.channels[channel] and type in self.channels[channel]['groups']:
+            groups.extend(self.channels[channel]['groups'][type])
         return groups
 
     def get_icon(self, default='light') -> str:
