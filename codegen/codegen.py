@@ -183,14 +183,19 @@ class codegen:
         # map item property 'type' with proper value from DEVICES array
 
         self.item_addresses = []
+        self.item_ids = []
 
         for device in self.config_devices:
             device_obj = device_registry.get_device(device, self.config)
             device_addr = device_obj.get_device_address()
+            device_id = device_obj.get_id()
             self.devices.append(device_obj)
             if device_addr in self.item_addresses:
                 raise Exception(f"Device Address {device_addr} is not unique!")
             self.item_addresses.append(device_addr)
+            if device_id in self.item_ids:
+                raise Exception(f"Device ID {device_id} is not unique!")
+            self.item_ids.append(device_id)
 
         logging.info("Processing %d devices", len(self.devices))
 
