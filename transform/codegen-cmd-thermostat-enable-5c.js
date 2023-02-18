@@ -3,8 +3,7 @@
 
 (function(x) {
     if (x == '1' || x == 'ON') {
-        return '' // Do nothing
+        return JSON.stringify({preset: 'manual'})
     }
-    cmd = { current_heating_setpoint: '5' }
-    return JSON.stringify(cmd)
+    return JSON.stringify({ current_heating_setpoint: '5' })
 })(input)
