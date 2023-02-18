@@ -71,6 +71,8 @@ class Device:
         # Color limits (Mired)
         self.ct_min = self.type.get('ct_min', 150)
         self.ct_max = self.type.get('ct_max', 500)
+        # Thermostat modes
+        self.thermostat_control_mode = self.type.get('thermostat_control_mode', 'system_mode')
 
         # Zigbee only: Zigbee address
         self.zigbee_id = config_device.get('zigbee_id', None)
@@ -422,13 +424,27 @@ class Device:
                 },
             ))
             channels.append(MQTT_ThingChannel(
+                type='string',
+                id='thermostat_preset',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'REGEX:(.*"preset".*)∩JSONPATH:$.preset',
+                    'formatBeforePublish': json.dumps({'preset': '%s'})
+                },
+            ))
+            # Command topic depends on control mode
+            control_mode_js = ''
+            if self.thermostat_control_mode != 'system_mode':
+                control_mode_js = '-' + self.thermostat_control_mode
+            channels.append(MQTT_ThingChannel(
                 type='switch',
                 id='thermostat_enable',
                 args={
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
-                    'transformationPattern': 'REGEX:(.*"system_mode".*)∩JS:codegen-thermostat-enable.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-thermostat-enable.js',
+                    'transformationPattern': f'REGEX:(.*"system_mode".*)∩JS:codegen-thermostat-enable{control_mode_js}.js',
+                    'transformationPatternOut': f'JS:codegen-cmd-thermostat-enable{control_mode_js}.js',
                 },
             ))
 
@@ -857,6 +873,18 @@ class Device:
                     groups=self.get_groups(type='thermostat_mode'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:thermostat_mode',
+                    sitemap_type='Text',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_thermostat_preset",
+                    name=f'{self.name} PRESET [%s]',
+                    type='String',
+                    icon='heatingt',
+                    groups=self.get_groups(type='thermostat_preset'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:thermostat_preset',
                     sitemap_type='Text',
                 )
             )

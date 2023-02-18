@@ -277,7 +277,7 @@ class DEVICES:
             'activity',
             'battery_low',
         ],
-        'thermostat_control_mode': "",
+        'thermostat_control_mode': "system_mode",
         'device_name': 'TuYa Radiator valve with thermostat (TS0601_thermostat 3)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/TS0601_thermostat_3.html',
     }
@@ -473,7 +473,7 @@ class DEVICES:
         ],
         # Device reports value seems to be 'per element' (it has 2xAA)
         'batt_type': '1xAA',
-        'thermostat_control_mode': "preset",  # Has "preset" option
+        'thermostat_control_mode': "system_mode",
         'device_name': 'Silvercrest radiator valve with thermostat',
         'device_url': 'https://www.zigbee2mqtt.io/devices/368308_2010.html',
     }
@@ -487,9 +487,25 @@ class DEVICES:
         ],
         # Device reports value seems to be 'per element' (it has 2xAA)
         'batt_type': '1xAA',
-        'thermostat_control_mode': "",  # Device does not react on mode change
+        'thermostat_control_mode': "system_mode",
         'device_name': 'Siterwell GS361A-H04 valve with thermostat',
         'device_url': 'https://www.zigbee2mqtt.io/devices/GS361A-H04.html',
+    }
+
+    # MOES devices
+
+    MOES_THERMOSTAT_BRT_100 = {
+        'types': [
+            'zigbee',
+            'thermostat',
+            'local_temperature',
+            'position'
+            'activity',
+            'battery',
+        ],
+        'thermostat_control_mode': "5c",
+        'device_name': 'Moes BRT-100-TRV thermostat',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/BRT-100-TRV.html',
     }
 
     # DIY devices by author
