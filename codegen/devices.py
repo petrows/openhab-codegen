@@ -499,7 +499,7 @@ class DEVICES:
             'zigbee',
             'thermostat',
             'local_temperature',
-            'position'
+            'position',
             'activity',
             'battery',
         ],
