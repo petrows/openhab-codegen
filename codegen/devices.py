@@ -507,6 +507,14 @@ class DEVICES:
         'device_name': 'Moes BRT-100-TRV thermostat',
         'device_url': 'https://www.zigbee2mqtt.io/devices/BRT-100-TRV.html',
     }
+    MOES_SWITCH_ZS_EUB_1GANG = {
+        'types': [
+            'zigbee',
+            'plug',
+        ],
+        'device_name': 'Wall light switch (1 gang)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/ZS-EUB_1gang.html',
+    }
 
     # DIY devices by author
 
