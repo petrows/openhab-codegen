@@ -337,7 +337,7 @@ class Device:
                 args={
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
-                    'transformationPattern': 'REGEX:(.*"brightness".*)∩JSONPATH:$.brightness',
+                    'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
                     'transformationPatternOut': 'JS:codegen-cmd-brightness.js',
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
