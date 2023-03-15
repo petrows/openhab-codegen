@@ -313,7 +313,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'JSONPATH:$.state',
-                    'formatBeforePublish': json.dumps({'state': "%s", 'transition': 1}),
+                    'formatBeforePublish': json.dumps({'state': "%s", 'transition': 0}),
                 },
             ))
         # Device has switch (multi-gang) option
