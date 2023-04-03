@@ -103,7 +103,10 @@ class Device:
         """
         cfg = {}
         if self.is_simulated_brightness():
-            cfg['simulated_brightness'] = []
+            cfg['simulated_brightness'] = {
+                'delta': 5,
+                'interval': 100,
+            }
         return cfg
 
     def get_id(self) -> str:
