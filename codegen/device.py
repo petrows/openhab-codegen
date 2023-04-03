@@ -385,11 +385,12 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"action".*)∩JSONPATH:$.action',
-                    'trigger': 'true'
+                    'trigger': 'true',
                 },
             ))
             # Simulate brightness?
             if self.is_simulated_brightness():
+                # Saved brightness (absolute value)
                 channels.append(MQTT_ThingChannel(
                     type='dimmer',
                     id='dim',
@@ -398,6 +399,16 @@ class Device:
                         'transformationPattern': 'REGEX:(.*"action_brightness_delta".*)∩JSONPATH:$.brightness',
                         'min': 0,
                         'max': 255,
+                    },
+                ))
+                # Delta brightness (relative value)
+                channels.append(MQTT_ThingChannel(
+                    type='number',
+                    id='action_dim',
+                    args={
+                        'stateTopic': state_topic,
+                        'transformationPattern': 'REGEX:(.*"action_brightness_delta".*)∩JSONPATH:$.action_brightness_delta',
+                        'trigger': 'true',
                     },
                 ))
         # Device is TRV
