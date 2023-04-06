@@ -379,6 +379,16 @@ class DEVICES:
         'device_name': 'Livarno Home Lux ceiling light (14147206L)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/14147206L.html#lidl-14147206l',
     }
+    LIVARNO_RGB_HG07834B = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ct',
+            'color',
+        ],
+        'device_name': 'Livarno Lux E14 candle RGB (HG07834B)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/HG07834B.html#lidl-hg07834b',
+    }
     # DIY
     DIY_CC2540_ROUTER = {
         'types': [
