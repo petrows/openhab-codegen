@@ -1,0 +1,19 @@
+// Device needs to proxy events from groups, to filter duplicating
+rule "{{ item.name }} proxy state item"
+when
+    Item {{ item.id }}_sw changed
+then
+    if ({{ item.id }}_sw_proxy.state != newState) {
+        {{ item.id }}_sw_proxy.postUpdate(newState)
+    }
+end
+rule "{{ item.name }} proxy state group"
+when
+    Item {{ item.id }}_sw_proxy received command
+then
+    if ({{ item.id }}_sw.state != receivedCommand) {
+        {{ item.id }}_sw.sendCommand(receivedCommand)
+    } else {
+        logWarn("proxy", "Filter state for item {{ item.id }}")
+    }
+end

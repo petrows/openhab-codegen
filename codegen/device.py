@@ -1,7 +1,7 @@
 from pydoc_data.topics import topics
 from typing import List
 import numpy as np
-from codegen.item import Item, MQTT_Item
+from codegen.item import Generic_Item, Item, MQTT_Item
 from codegen.thing import *
 from pprint import pprint
 import json
@@ -73,6 +73,9 @@ class Device:
         self.ct_max = self.type.get('ct_max', 500)
         # Color CT apply when ON
         self.ct_auto = config_device.get('ct_auto', True)
+        # Proxy state - filter states from groups, if already set
+        # Workaround: https://github.com/Koenkk/zigbee2mqtt/issues/14714
+        self.proxy_state = self.type.get('proxy_state', False)
         # Thermostat modes
         self.thermostat_control_mode = self.type.get('thermostat_control_mode', 'system_mode')
 
@@ -704,13 +707,34 @@ class Device:
 
         # Device has switch (Lamp, Wall socket)
         if self.has_tag_any('lamp', 'plug'):
+            item_groups = self.get_groups(type='sw')
+            # If we want to proxy states from groups -> drop original list
+            # And create proxy item, connected to groups, to check state before update
+            if self.proxy_state:
+                # Clean groups list for device itself (we want to proxy events)
+                item_groups = []
+                # Add proxy item for group events
+                items.append(
+                    Generic_Item(
+                        id=f"{self.id}_sw_proxy",
+                        name=f"{self.name} proxy",
+                        type='Switch',
+                        icon=self.get_icon(default='light'),
+                        groups=self.get_groups(type='sw'),
+                    )
+                )
+                # Add rules to proxy events
+                environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
+                template = environment.get_template("proxy_state.rules")
+                self.rules.extend(template.render(item=self).splitlines())
+
             items.append(
                 MQTT_Item(
                     id=f"{self.id}_sw",
                     name=self.name,
                     type='Switch',
                     icon=self.get_icon(default='light'),
-                    groups=self.get_groups(type='sw'),
+                    groups=item_groups,
                     expire=self.get_expire(),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:state',

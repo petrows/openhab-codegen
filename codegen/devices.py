@@ -367,6 +367,8 @@ class DEVICES:
             'ct',
             'color',
         ],
+        # Workaround: https://github.com/Koenkk/zigbee2mqtt/issues/14714
+        'proxy_state': True,  # Filter repeating state commands
         'device_name': 'Livarno Home LED ceiling light (HG08008)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/HG08008.html#lidl-hg08008',
     }
