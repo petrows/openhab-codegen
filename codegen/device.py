@@ -71,6 +71,8 @@ class Device:
         # Color limits (Mired)
         self.ct_min = self.type.get('ct_min', 150)
         self.ct_max = self.type.get('ct_max', 500)
+        # Color CT apply when ON
+        self.ct_auto = config_device.get('ct_auto', True)
         # Thermostat modes
         self.thermostat_control_mode = self.type.get('thermostat_control_mode', 'system_mode')
 
@@ -816,11 +818,12 @@ class Device:
                     sitemap_type='Slider',
                 )
             )
-            environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
-            template = environment.get_template("ct_rule_header.rules")
-            self.rules_header.extend(template.render(item=self).splitlines())
-            template = environment.get_template("ct_rule.rules")
-            self.rules.extend(template.render(item=self).splitlines())
+            if self.ct_auto:
+                environment = jinja2.Environment(loader=jinja2.FileSystemLoader("rules/"))
+                template = environment.get_template("ct_rule_header.rules")
+                self.rules_header.extend(template.render(item=self).splitlines())
+                template = environment.get_template("ct_rule.rules")
+                self.rules.extend(template.render(item=self).splitlines())
 
         # Some zigbee lamps have color
         if self.has_tag('color'):
