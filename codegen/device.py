@@ -339,6 +339,7 @@ class Device:
                 ))
         # Lamps have dimmer
         if self.has_tag('lamp'):
+            # Normal control point
             channels.append(MQTT_ThingChannel(
                 type='dimmer',
                 id='dim',
@@ -347,6 +348,19 @@ class Device:
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
                     'transformationPatternOut': 'JS:codegen-cmd-brightness.js',
+                    'min': self.brightness_min,  # Dedvice type could change that
+                    'max': self.brightness_max,
+                },
+            ))
+            # Control point for fast change - for dimmers
+            channels.append(MQTT_ThingChannel(
+                type='dimmer',
+                id='dim_fast',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
+                    'transformationPatternOut': 'JS:codegen-cmd-brightness-fast.js',
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },
@@ -815,6 +829,7 @@ class Device:
 
         # All zigbee lamps have dimmer
         if self.has_tag('lamp'):
+            # Normal (with transition)
             items.append(
                 MQTT_Item(
                     id=f"{self.id}_dim",
@@ -825,6 +840,17 @@ class Device:
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:dim',
                     sitemap_type='Slider',
+                )
+            )
+            # Fast control (for dimmers)
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_dim_fast",
+                    name=f'{self.name} DIM-F [%d %%]',
+                    type='Dimmer',
+                    groups=self.get_groups(type='dim_fast'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:dim_fast',
                 )
             )
 
