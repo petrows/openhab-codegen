@@ -3,6 +3,12 @@ rule "{{ item.name }} apply color on ON"
 when
     Item {{ item.id }}_sw changed to ON
 then
+    {%- if item.has_tag('color') %}
+    // Item with RGB: do not reset RGB color while ON
+    if ({{ item.id }}_color_mode.state == "xy") {
+        return
+    }
+    {%- endif %}
     val ct_set = ({{ item.id }}_ct.state as Number).intValue
     {{ item.id }}_ct_timer = createTimer(now.plusSeconds(1), [ |
         {{ item.id }}_ct.sendCommand(ct_set)
