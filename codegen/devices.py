@@ -388,6 +388,8 @@ class DEVICES:
             'ct',
             'color',
         ],
+        # Workaround: https://github.com/Koenkk/zigbee2mqtt/issues/14714
+        'proxy_state': True,  # Filter repeating state commands
         'device_name': 'Livarno Lux E14 candle RGB (HG07834B)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/HG07834B.html#lidl-hg07834b',
     }
