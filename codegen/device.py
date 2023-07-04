@@ -364,8 +364,8 @@ class Device:
                     args={
                         'stateTopic': state_topic,
                         'commandTopic': command_topic,
-                        'transformationPattern': f'JSONPATH:$.position_{channel_id}',
-                        'formatBeforePublish': json.dumps({f'position_{channel_id}': "%s"})
+                        'transformationPattern': f'JS:codegen-rpos.js?channel=position_{channel_id}',
+                        'transformationPatternOut': f'JS:codegen-cmd-rpos.js?channel=position_{channel_id}',
                     },
                 ))
                 channels.append(MQTT_ThingChannel(
@@ -831,7 +831,7 @@ class Device:
                 items.append(
                     MQTT_Item(
                         id=f'{channel["id"]}_pos',
-                        name=channel["name"],
+                        name=f'{channel["name"]} [%d %%]',
                         type='Dimmer',
                         icon=self.get_icon(default='blinds'),
                         groups=self.get_channel_groups(
@@ -844,7 +844,7 @@ class Device:
                 items.append(
                     MQTT_Item(
                         id=f'{channel["id"]}_cal',
-                        name=f'{channel["name"]} cal',
+                        name=f'{channel["name"]} cal [%s]',
                         type='Switch',
                         icon=self.get_icon(default='light'),
                         groups=self.get_channel_groups(
