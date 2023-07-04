@@ -819,6 +819,19 @@ class Device:
             for channel_id, channel in self.channels.items():
                 items.append(
                     MQTT_Item(
+                        id=f'{channel["id"]}_cmd',
+                        name=f'{channel["name"]} [%s]',
+                        type='String',
+                        icon=self.get_icon(default='blinds'),
+                        groups=self.get_channel_groups(
+                            channel=channel_id, type='cmd'),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:state_{channel_id}',
+                        sitemap_type='Switch',
+                    )
+                )
+                items.append(
+                    MQTT_Item(
                         id=f'{channel["id"]}_mov',
                         name=f'{channel["name"]} movement',
                         type='String',
@@ -849,7 +862,6 @@ class Device:
                         icon=self.get_icon(default='light'),
                         groups=self.get_channel_groups(
                             channel=channel_id, type='cal'),
-                        expire=self.get_channel_expire(channel=channel_id),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:calibration_{channel_id}',
                         sitemap_type='Switch',
