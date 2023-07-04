@@ -530,6 +530,16 @@ class DEVICES:
         'device_url': 'https://www.zigbee2mqtt.io/devices/ZS-EUB_1gang.html',
     }
 
+    # Lonsonho universal devices
+    LS_BLINDS_MODULE_2CH = {
+        'types': [
+            'zigbee',
+            'blinds_mt',
+        ],
+        'device_name': 'Curtains module (2 gang)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/TS130F_dual.html',
+    }
+
     # DIY devices by author
 
     PETROWS_CO2_SENSOR = {

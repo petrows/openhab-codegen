@@ -337,6 +337,47 @@ class Device:
                         'formatBeforePublish': json.dumps({f'state_{channel_id}': "%s"})
                     },
                 ))
+        # Device has curtain/blinds (multi-gang) option
+        if self.has_tag('blinds_mt'):
+            for channel_id, _ in self.channels.items():
+                channels.append(MQTT_ThingChannel(
+                    type='string',
+                    id=f'moving_{channel_id}',
+                    args={
+                        'stateTopic': state_topic,
+                        'transformationPattern': f'JSONPATH:$.moving_{channel_id}',
+                    },
+                ))
+                channels.append(MQTT_ThingChannel(
+                    type='string',
+                    id=f'state_{channel_id}',
+                    args={
+                        'stateTopic': state_topic,
+                        'commandTopic': command_topic,
+                        'transformationPattern': f'JSONPATH:$.state_{channel_id}',
+                        'formatBeforePublish': json.dumps({f'state_{channel_id}': "%s"})
+                    },
+                ))
+                channels.append(MQTT_ThingChannel(
+                    type='dimmer',
+                    id=f'position_{channel_id}',
+                    args={
+                        'stateTopic': state_topic,
+                        'commandTopic': command_topic,
+                        'transformationPattern': f'JSONPATH:$.position_{channel_id}',
+                        'formatBeforePublish': json.dumps({f'position_{channel_id}': "%s"})
+                    },
+                ))
+                channels.append(MQTT_ThingChannel(
+                    type='switch',
+                    id=f'calibration_{channel_id}',
+                    args={
+                        'stateTopic': state_topic,
+                        'commandTopic': command_topic,
+                        'transformationPattern': f'JSONPATH:$.calibration_{channel_id}',
+                        'formatBeforePublish': json.dumps({f'calibration_{channel_id}': "%s"})
+                    },
+                ))
         # Lamps have dimmer
         if self.has_tag('lamp'):
             # Normal control point
@@ -769,6 +810,48 @@ class Device:
                         expire=self.get_channel_expire(channel=channel_id),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:state_{channel_id}',
+                        sitemap_type='Switch',
+                    )
+                )
+
+        # Multi-gang curtains module
+        if self.has_tag('blinds_mt'):
+            for channel_id, channel in self.channels.items():
+                items.append(
+                    MQTT_Item(
+                        id=f'{channel["id"]}_mov',
+                        name=f'{channel["name"]} movement',
+                        type='String',
+                        icon=self.get_icon(default='blinds'),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:moving_{channel_id}',
+                        sitemap_type='Text',
+                    )
+                )
+                items.append(
+                    MQTT_Item(
+                        id=f'{channel["id"]}_pos',
+                        name=channel["name"],
+                        type='Dimmer',
+                        icon=self.get_icon(default='blinds'),
+                        groups=self.get_channel_groups(
+                            channel=channel_id, type='pos'),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:position_{channel_id}',
+                        sitemap_type='Slider',
+                    )
+                )
+                items.append(
+                    MQTT_Item(
+                        id=f'{channel["id"]}_cal',
+                        name=f'{channel["name"]} cal',
+                        type='Switch',
+                        icon=self.get_icon(default='light'),
+                        groups=self.get_channel_groups(
+                            channel=channel_id, type='cal'),
+                        expire=self.get_channel_expire(channel=channel_id),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:calibration_{channel_id}',
                         sitemap_type='Switch',
                     )
                 )
