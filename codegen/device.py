@@ -337,6 +337,47 @@ class Device:
                         'formatBeforePublish': json.dumps({f'state_{channel_id}': "%s"})
                     },
                 ))
+
+        # Device has curtain/blinds (single-gang) option
+        if self.has_tag('blinds'):
+            channels.append(MQTT_ThingChannel(
+                type='string',
+                id=f'moving',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': f'JSONPATH:$.moving',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='string',
+                id=f'state',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': f'JSONPATH:$.state',
+                    'formatBeforePublish': json.dumps({f'state': "%s"})
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='dimmer',
+                id=f'position',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': f'JS:codegen-rpos.js?channel=position',
+                    'transformationPatternOut': f'JS:codegen-cmd-rpos.js?channel=position',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='switch',
+                id=f'calibration',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': f'JSONPATH:$.calibration',
+                    'formatBeforePublish': json.dumps({f'calibration': "%s"})
+                },
+            ))
         # Device has curtain/blinds (multi-gang) option
         if self.has_tag('blinds_mt'):
             for channel_id, _ in self.channels.items():
@@ -813,7 +854,55 @@ class Device:
                         sitemap_type='Switch',
                     )
                 )
-
+        # Single-gang curtains module
+        if self.has_tag('blinds'):
+            items.append(
+                MQTT_Item(
+                    id=f'{self.id}_cmd',
+                    name=f'{self.name} [%s]',
+                    type='String',
+                    icon=self.get_icon(default='blinds'),
+                    groups=self.get_groups(type='cmd'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:state',
+                    sitemap_type='Switch',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f'{self.id}_mov',
+                    name=f'{self.name} movement',
+                    type='String',
+                    icon=self.get_icon(default='blinds'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:moving',
+                    sitemap_type='Text',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f'{self.id}_pos',
+                    name=f'{self.name} [%d %%]',
+                    type='Dimmer',
+                    icon=self.get_icon(default='blinds'),
+                    groups=self.get_groups(type='pos'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:position',
+                    sitemap_type='Slider',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f'{self.id}_cal',
+                    name=f'{self.name} cal [%s]',
+                    type='Switch',
+                    icon=self.get_icon(default='light'),
+                    groups=self.get_groups(type='cal'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:calibration',
+                    sitemap_type='Switch',
+                )
+            )
         # Multi-gang curtains module
         if self.has_tag('blinds_mt'):
             for channel_id, channel in self.channels.items():

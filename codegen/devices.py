@@ -531,7 +531,15 @@ class DEVICES:
     }
 
     # Lonsonho universal devices
-    LS_BLINDS_MODULE_2CH = {
+    BLINDS_MODULE_TS130F_1CH = {
+        'types': [
+            'zigbee',
+            'blinds',
+        ],
+        'device_name': 'Curtains module (1 gang)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/TS130F.html',
+    }
+    BLINDS_MODULE_TS130F_2CH = {
         'types': [
             'zigbee',
             'blinds_mt',
