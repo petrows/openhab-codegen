@@ -700,6 +700,27 @@ class Device:
                 },
             ))
 
+        # Device is DiY DHT22 sensor
+        if self.has_tag('dht22'):
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='temperature',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'JSONPATH:$.DHT22.Temperature',
+                    'unit': '°C',
+                },
+            ))
+            channels.append(MQTT_ThingChannel(
+                type='number',
+                id='humidity',
+                args={
+                    'stateTopic': state_topic,
+                    'transformationPattern': 'JSONPATH:$.DHT22.Humidity',
+                    'unit': '%',
+                },
+            ))
+
         # WiFi signal values
         channels.append(MQTT_ThingChannel(
             type='number',
