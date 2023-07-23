@@ -325,6 +325,15 @@ class DEVICES:
         'device_name': 'TuYa Wall switch module (WHD02)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/WHD02.html',
     }
+    TUYA_WALL_DIMMER = {
+        'types': [
+            'zigbee',
+            'lamp',
+        ],
+        'dim_min': 30,
+        'device_name': 'TuYa Wall dimmer module (TS110E_1gang_1)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/TS110E_1gang_1.html#tuya-ts110e_1gang_1',
+    }
     TUYA_WALL_SWITCH_TS0601 = {
         'types': [
             'zigbee',
