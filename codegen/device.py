@@ -436,7 +436,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-brightness.js?transition=' + str(self.transition_brightnes),
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=' + str(self.transition_brightnes),
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },
@@ -449,14 +449,13 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-brightness-fast.js',
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=0',
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },
             ))
         # Lamps have color temp?
         if self.has_tag('ct'):
-            js_transform = 'codegen-cmd-color_temp'
             channels.append(MQTT_ThingChannel(
                 type='dimmer',
                 id='ct',
@@ -464,7 +463,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"color_temp".*)∩JSONPATH:$.color_temp',
-                    'transformationPatternOut': f'JS:{js_transform}.js',
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=color_temp&t=3',
                     'min': self.ct_min,
                     'max': self.ct_max,
                 },
