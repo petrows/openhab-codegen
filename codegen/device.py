@@ -76,6 +76,8 @@ class Device:
         # Proxy state - filter states from groups, if already set
         # Workaround: https://github.com/Koenkk/zigbee2mqtt/issues/14714
         self.proxy_state = self.type.get('proxy_state', False)
+        # Proxy state will request device state after filtering by default
+        self.proxy_state_request = self.type.get('proxy_state_request', True)
         # Thermostat modes
         self.thermostat_control_mode = self.type.get('thermostat_control_mode', 'system_mode')
 

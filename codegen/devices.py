@@ -332,6 +332,9 @@ class DEVICES:
         ],
         'dim_min': 30,
         'proxy_state': True,  # Filter repeating state commands
+        # Reuqst device status after filtering?
+        # This device triggers state after request
+        'proxy_state_request': False,
         'device_name': 'TuYa Wall dimmer module (TS110E_1gang_1)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/TS110E_1gang_1.html#tuya-ts110e_1gang_1',
     }

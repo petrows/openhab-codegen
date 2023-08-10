@@ -15,8 +15,10 @@ then
         {{ item.id }}_sw.sendCommand(receivedCommand)
     } else {
         logWarn("proxy", "Filter state for item {{ item.id }}")
+        {%- if item.proxy_state_request %}
         // Send request for status - to ensure we are in sync
         val mq = getActions("mqtt","mqtt:broker:{{ item.config.mqtt_broker_id }}")
         mq.publishMQTT("zigbee2mqtt/{{ item.id }}/get","{\"state\":\"\"}")
+        {%- endif %}
     }
 end
