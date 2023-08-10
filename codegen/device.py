@@ -64,6 +64,11 @@ class Device:
         if 'device_id' in config_device:
             self.device_id = config_device['device_id']
 
+        # Transition config
+        # Default - from device, else 1
+        self.transition_brightnes = self.type.get('transition_brightnes', 1)
+        if 'transition_brightnes' in config_device:
+            self.transition_brightnes = config_device.get('transition_brightnes')
         # Custom device options
         # Brightness limits (we have minimal default is 1 - to ensure ON state)
         self.brightness_min = self.type.get('dim_min', 1)
@@ -431,7 +436,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-brightness.js',
+                    'transformationPatternOut': 'JS:codegen-cmd-brightness.js?transition=' + str(self.transition_brightnes),
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },
