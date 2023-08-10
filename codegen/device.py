@@ -31,6 +31,7 @@ class Device:
     def __init__(self, config_device, config_type) -> None:
         self.type = config_type
         self.tags = config_type['types'] # Device 'tags'
+        self.config_device = config_device
         self.channels = config_device.get('channels', {})
         self.expire = config_device.get('expire', None)
         self.icon = config_device.get('icon', None)
@@ -66,9 +67,13 @@ class Device:
 
         # Transition config
         # Default - from device, else 1
-        self.transition_brightnes = self.type.get('transition_brightnes', 1)
-        if 'transition_brightnes' in config_device:
-            self.transition_brightnes = config_device.get('transition_brightnes')
+        transition_default = 1
+        # Relay device does not have transition by default
+        if self.has_tag('plug'): transition_default = 0
+        # Read config / device / default option
+        self.transition_sw = self.get_device_config_option('transition_sw', transition_default)
+        self.transition_brightness = self.get_device_config_option('transition_brightness', transition_default)
+
         # Custom device options
         # Brightness limits (we have minimal default is 1 - to ensure ON state)
         self.brightness_min = self.type.get('dim_min', 1)
@@ -94,6 +99,17 @@ class Device:
             Set global options (like broker address, settings, etc)
         """
         self.config = config_global
+
+    def get_device_config_option(self, option, default):
+        """
+            Get config option, return first found:
+            * device
+            * device type
+            * default
+        """
+        if option in self.config_device: return self.config_device.get(option)
+        if option in self.type: return self.type.get(option)
+        return default
 
     def get_device_address(self):
         # Zigbee: return device address
@@ -328,7 +344,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'JSONPATH:$.state',
-                    'formatBeforePublish': json.dumps({'state': "%s", 'transition': 1}),
+                    'transformationPatternOut': f'JS:codegen-cmd-value.js?f=state&t={self.transition_sw}',
                 },
             ))
         # Device has switch (multi-gang) option
@@ -436,7 +452,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=' + str(self.transition_brightnes),
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=' + str(self.transition_brightness),
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },

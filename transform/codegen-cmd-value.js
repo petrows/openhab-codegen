@@ -10,7 +10,7 @@
     // Write value
     out[field] = input
     // Write transition?
-    if (transition) {
+    if (transition && 0 != transition) {
         out['transition'] = Math.round(transition)
     }
     return JSON.stringify(out)
