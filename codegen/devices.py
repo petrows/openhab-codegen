@@ -104,6 +104,18 @@ class DEVICES:
         'device_name': 'IKEA TRADFRI LED bulb E27 WW clear 250 lumen, dimmable (LED1842G3)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/LED1842G3.html',
     }
+    IKEA_TRADFRI_LED_DRIVER = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ikea',
+        ],
+        # This device has no transition
+        'transition_sw': 0,
+        'transition_brightness': 0,
+        'device_name': 'IKEA TRADFRI driver for wireless control',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/ICPSHC24-10EU-IL-1.html',
+    }
     IKEA_TRADFRI_LAMP_COLOR_600 = {
         'types': [
             'zigbee',
