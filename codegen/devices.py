@@ -86,6 +86,17 @@ class DEVICES:
         # 'ct_min': 250,
         # 'ct_max': 454,
     }
+    IKEA_TRADFRI_LAMP_LED2101G4 = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ikea',
+            'ct',
+            'ct_startup',
+        ],
+        'device_name': 'TRADFRI bulb E12/E14 WS globe 450/470 lumen, dimmable, white spectrum, opal white',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/LED2101G4.html',
+    }
     IKEA_TRADFRI_LAMP_W_806 = {
         'types': [
             'zigbee',
