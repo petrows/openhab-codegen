@@ -1211,9 +1211,9 @@ class Device:
                     name=f'{self.name} CAL [%.0f %unit%]',
                     type='Number:Temperature',
                     icon='heatingt',
-                    groups=self.get_groups(type='thermostat_local_temperature_calibration'),
+                    groups=self.get_groups(type='local_temperature_calibration'),
                     broker=self.config['mqtt_broker_id'],
-                    channel_id=f'{self.id}:thermostat_local_temperature_calibration',
+                    channel_id=f'{self.id}:local_temperature_calibration',
                     sitemap_type='Setpoint',
                 )
             )
