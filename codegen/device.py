@@ -546,7 +546,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"current_heating_setpoint".*)∩JSONPATH:$.current_heating_setpoint',
-                    'transformationPatternOut': 'JS:codegen-cmd-thermostat-point.js',
+                    'transformationPatternOut': 'JS:codegen-cmd-float.js?f=current_heating_setpoint',
                     'unit': 'C°',
                 },
             ))
@@ -592,7 +592,8 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"local_temperature_calibration".*)∩JSONPATH:$.local_temperature_calibration',
-                    'formatBeforePublish': json.dumps({'local_temperature_calibration': '%s'})
+                    'transformationPatternOut': 'JS:codegen-cmd-float.js?f=local_temperature_calibration',
+                    'unit': 'C°',
                 },
             ))
 
