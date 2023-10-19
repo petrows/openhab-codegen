@@ -9,8 +9,8 @@ import jinja2
 
 # Simple information channes, read only (all devices)
 DEVICE_SIMPLE_CHANNELS = [
-    {'id': 'temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
-    {'id': 'local_temperature', 'title': 'temp  [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
+    {'id': 'temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
+    {'id': 'local_temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
     {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%' },
     {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure', 'unit': 'hPa' },
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow', 'channel_args': {'on':'true','off':'false'} },
@@ -582,6 +582,17 @@ class Device:
                     'commandTopic': command_topic,
                     'transformationPattern': f'REGEX:(.*"system_mode".*)∩JS:codegen-thermostat-enable{control_mode_js}.js',
                     'transformationPatternOut': f'JS:codegen-cmd-thermostat-enable{control_mode_js}.js',
+                },
+            ))
+            # Local calibration value
+            channels.append(MQTT_ThingChannel(
+                type='string',
+                id='local_temperature_calibration',
+                args={
+                    'stateTopic': state_topic,
+                    'commandTopic': command_topic,
+                    'transformationPattern': 'REGEX:(.*"local_temperature_calibration".*)∩JSONPATH:$.local_temperature_calibration',
+                    'formatBeforePublish': json.dumps({'local_temperature_calibration': '%s'})
                 },
             ))
 
@@ -1192,6 +1203,18 @@ class Device:
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:thermostat_enable',
                     sitemap_type='Switch',
+                )
+            )
+            items.append(
+                MQTT_Item(
+                    id=f"{self.id}_local_temperature_calibration",
+                    name=f'{self.name} CAL [%.0f %unit%]',
+                    type='Number:Temperature',
+                    icon='heatingt',
+                    groups=self.get_groups(type='thermostat_local_temperature_calibration'),
+                    broker=self.config['mqtt_broker_id'],
+                    channel_id=f'{self.id}:thermostat_local_temperature_calibration',
+                    sitemap_type='Setpoint',
                 )
             )
 
