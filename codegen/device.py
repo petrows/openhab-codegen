@@ -1050,6 +1050,7 @@ class Device:
                         type='Switch',
                         icon=self.get_icon(default='light'),
                         groups=self.get_channel_groups(channel=channel['id'], type='sw'),
+                        expire=self.get_channel_expire(channel=channel['id']),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:{channel["id"]}',
                         sitemap_type='Switch',
