@@ -36,6 +36,7 @@ class Device:
         self.expire = config_device.get('expire', None)
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
+        self.y2m = config_device.get('y2m', {})
 
         # If device needs rules, we will store it here
         self.rules_header = []
@@ -1261,5 +1262,86 @@ class Device:
             )
         )
 
-
         return items
+
+    def has_y2m(self):
+        if self.y2m:
+            return True
+        # Multi-channel device?
+        if self.channels:
+            for _, channel in self.channels.items():
+                if channel.get('y2m', {}):
+                    return True
+        return False
+
+    def get_y2m_js(self, id=None, name=None, room=None, device_type=None, device_sub_type=None, device_options={}):
+        if not device_type and self.has_tag('lamp'):
+            device_type = 'Light'
+            if self.has_tag('ct'):
+                device_sub_type = 'LIGHT.CT'
+            if self.has_tag('color'):
+                device_sub_type = 'LIGHT.RGB'
+            if self.proxy_state:
+                device_options.append('proxy: true')
+        if not device_type and self.has_tag('temperature'):
+            device_type = 'Sensor'
+        if not device_type and self.has_tag('co2'):
+            device_type = 'Sensor'
+            device_options.append('co2: true')
+
+        if device_options:
+            device_options = '    ' + '\n    '.join(device_options) + ',\n'
+        else:
+            device_options = ''
+
+        if device_type == 'Light':
+            return f"""Light({device_sub_type}, {{
+    id: '{id}',
+    name: '{name}',
+    room: ROOMS.{room},
+{device_options}}}),""".split('\n')
+
+        if device_type in ['Thermostat', 'Shutter', 'Sensor']:
+            return f"""{device_type}({{
+    id: '{id}',
+    name: '{name}',
+    room: ROOMS.{room},
+{device_options}}}),""".split('\n')
+
+        return []
+
+    def get_y2m_config(self):
+        if self.channels:
+            ret = []
+            for _, channel in self.channels.items():
+                y2m = channel.get('y2m', {})
+                if not y2m: continue
+                device_name = y2m.get('name', None)
+                device_room = y2m.get('room', None)
+                device_type = y2m.get('type', 'Light')
+                device_sub_type = y2m.get('subtype', 'LIGHT.SW')
+                device_options = []
+                ret.extend(self.get_y2m_js(
+                    channel['id'],
+                    name=device_name,
+                    room=device_room,
+                    device_type=device_type,
+                    device_sub_type=device_sub_type,
+                    device_options=device_options,
+                ))
+            return ret
+
+        device_name = self.y2m.get('name', None)
+        device_room = self.y2m.get('room', None)
+        device_type = self.y2m.get('type', None)
+        device_sub_type = self.y2m.get('subtype', 'LIGHT.DIM')
+        device_options = []
+
+        return self.get_y2m_js(
+            self.id,
+            name=device_name,
+            room=device_room,
+            device_type=device_type,
+            device_sub_type=device_sub_type,
+            device_options=device_options,
+        )

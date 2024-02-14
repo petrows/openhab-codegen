@@ -61,6 +61,7 @@ class codegen:
             config = yaml.safe_load(stream)
             self.config = self.config_defaults | config['config']
             self.config_devices = config['devices']
+            self.config_y2m = config.get('y2m', {'rooms':{}})
 
     def write_file(self, data, file=Path):
         # Join data file to strings + trailing \n
@@ -172,6 +173,33 @@ class codegen:
 
         self.write_file(yaml.dump(conf).splitlines(), file)
 
+    def update_y2m_js(self, file=Path):
+        # Generate yandex2mqtt
+        # This config is optional
+        if not self.config_y2m:
+            return
+        # Copy template
+        tpl_src = Path(self.self_path / "y2m/yandex2mqtt.template.js")
+        self.write_file(open(tpl_src).read().splitlines(), file.parent / "yandex2mqtt.template.js")
+        rooms = self.config_y2m['rooms']
+
+        conf_str: List[str] = list()
+        # Include template
+        conf_str.append('const tpl = require("./yandex2mqtt.template")')
+        conf_str.append('const { LIGHT, LightGroup, Light, Thermostat, Sensor, Shutter } = tpl')
+        conf_str.append('const ROOMS = {')
+        for room_id, room in rooms.items():
+            conf_str.append(f'  {room_id}: \'{room}\',')
+        conf_str.append('}')
+        conf_str.append('module.exports = {')
+        conf_str.append('devices: [')
+        for device in self.devices:
+            if device.has_y2m():
+                conf_str.extend(device.get_y2m_config())
+        conf_str.append(']')
+        conf_str.append('}')
+        self.write_file(conf_str, file)
+
     def run(self):
         """
             Primary execute function
@@ -221,4 +249,8 @@ class codegen:
 
         self.update_devices_yaml(
             file=self.openhab_path / "devices.yaml",
+        )
+
+        self.update_y2m_js(
+            file=self.openhab_path / "yandex2mqtt.codegen.js",
         )
