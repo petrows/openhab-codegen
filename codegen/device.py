@@ -1321,6 +1321,10 @@ class Device:
                 device_type = y2m.get('type', 'Light')
                 device_sub_type = y2m.get('subtype', 'LIGHT.SW')
                 device_options = []
+                # FIXME: Tasmota has direct device name, no "_sw" suffix
+                if self.has_tag_any('tasmota'):
+                    device_options.append('sw: \'\'')
+
                 ret.extend(self.get_y2m_js(
                     channel['id'],
                     name=device_name,
