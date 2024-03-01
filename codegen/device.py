@@ -1283,11 +1283,11 @@ class Device:
                 device_sub_type = 'LIGHT.RGB'
             if self.proxy_state:
                 device_options.append('proxy: true')
-        if not device_type and self.has_tag('temperature'):
-            device_type = 'Sensor'
         if not device_type and self.has_tag('co2'):
             device_type = 'Sensor'
             device_options.append('co2: true')
+        if not device_type and self.has_tag('temperature'):
+            device_type = 'Sensor'
 
         if device_options:
             device_options = '    ' + '\n    '.join(device_options) + ',\n'
