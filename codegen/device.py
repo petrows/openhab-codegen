@@ -21,6 +21,10 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'co2_led', 'title': 'CO₂ alarm [%s]', 'type': 'Switch', 'icon': 'alarm'},
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
+    {'id': 'ac_voltage', 'title': '[%.0f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage'},
+    {'id': 'ac_current', 'title': '[%.0f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current'},
+    {'id': 'ac_power', 'title': '[%.0f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power'},
+    {'id': 'ac_energy', 'title': '[%.0f kWh]', 'type': 'Number:Energy', 'icon': 'energy', 'unit': 'kWh', 'topic_id': 'energy'},
 ]
 
 class Device:
@@ -600,9 +604,11 @@ class Device:
 
         for metric in DEVICE_SIMPLE_CHANNELS:
             if self.has_tag(metric['id']):
+                # Topic ID to be parsed from MQTT
+                topic_item_id = metric.get('topic_id', metric["id"])
                 args = {
                     'stateTopic': state_topic,
-                    'transformationPattern': f'REGEX:(.*"{metric["id"]}".*)∩JSONPATH:$.{metric["id"]}',
+                    'transformationPattern': f'REGEX:(.*"{topic_item_id}".*)∩JSONPATH:$.{topic_item_id}',
                 }
                 if 'unit' in metric:
                     args['unit'] = metric['unit']

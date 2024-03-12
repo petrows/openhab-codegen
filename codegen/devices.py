@@ -379,6 +379,21 @@ class DEVICES:
         'device_name': 'Wall switch module',
         'device_url': 'https://www.zigbee2mqtt.io/devices/WHD02.html#tuya-whd02',
     }
+    # Tyua Zigbee socket with power meter
+    TUYA_PLUG_TS000F = {
+        'types': [
+            'zigbee',
+            'plug',
+            'ac_current',
+            'ac_energy',
+            'ac_power',
+            'ac_voltage',
+        ],
+        'device_name': 'Plug socket with power function',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/TS000F_power.html',
+    }
+
+
     # Lidl smart home - Silvercrest
     SILVERCREST_SMART_PLUG = {
         'types': [
