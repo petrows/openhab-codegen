@@ -40,6 +40,7 @@ class Device:
         self.expire = config_device.get('expire', None)
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
+        self.groups_skip_auto = config_device.get('groups_skip_auto', [])
         self.y2m = config_device.get('y2m', {})
 
         # If device needs rules, we will store it here
@@ -169,13 +170,17 @@ class Device:
         return None
 
     def get_groups(self, type: str) -> List[str]:
-        groups = ['g_all_' + type]
+        groups = []
+        if not type in self.groups_skip_auto:
+            groups.append('g_all_' + type)
         if type in self.groups:
             groups.extend(self.groups[type])
         return groups
 
     def get_channel_groups(self, channel: str, type: str) -> List[str]:
-        groups = ['g_all_' + type]
+        groups = []
+        if not type in self.groups_skip_auto:
+            groups.append('g_all_' + type)
         if channel in self.channels and 'groups' in self.channels[channel] and type in self.channels[channel]['groups']:
             groups.extend(self.channels[channel]['groups'][type])
         return groups
