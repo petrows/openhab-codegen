@@ -198,6 +198,16 @@ class DEVICES:
         'device_name': 'IKEA STYRBAR remote control N2',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2001_E2002.html',
     }
+    IKEA_PARASOLL = {
+        'types': [
+            'zigbee',
+            'contact',
+            'ikea',
+            'battery',
+        ],
+        'device_name': 'PARASOLL Door/Window Sensor (E2013)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/E2013.html',
+    }
     # Sockets
     OSRAM_SMART_PLUG = {
         'types': [
