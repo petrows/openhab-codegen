@@ -41,6 +41,7 @@ class Device:
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
         self.groups_skip_auto = config_device.get('groups_skip_auto', [])
+        self.labels = config_device.get('labels', {})
         self.y2m = config_device.get('y2m', {})
 
         # If device needs rules, we will store it here
@@ -1031,7 +1032,7 @@ class Device:
                 items.append(
                     MQTT_Item(
                         id=f'{self.id}_{metric["id"]}',
-                        name=f'{self.name} {metric["title"]}',
+                        name=f'{self.name} {self.labels.get(metric["id"], metric["title"])}',
                         type=metric["type"],
                         icon=self.get_icon(default=metric["icon"]),
                         groups=self.get_groups(type=metric["id"]),
