@@ -208,6 +208,15 @@ class DEVICES:
         'device_name': 'PARASOLL Door/Window Sensor (E2013)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2013.html',
     }
+    IKEA_BADRING = {
+        'types': [
+            'zigbee',
+            'leak',
+            'battery',
+        ],
+        'device_name': 'BADRING water leakage sensor (E2202)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/E2202.html',
+    }
     # Sockets
     OSRAM_SMART_PLUG = {
         'types': [
