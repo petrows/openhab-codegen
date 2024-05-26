@@ -214,6 +214,7 @@ class DEVICES:
             'leak',
             'battery',
         ],
+        'mqtt_remap': { 'leak': 'water_leak' },
         'device_name': 'BADRING water leakage sensor (E2202)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2202.html',
     }

@@ -201,6 +201,15 @@ class Device:
         if 'Contact' in item_type: return 'contact'
         return 'string'
 
+    # Request remap some channels?
+    def get_mqtt_remap(self, id: str) -> str:
+        # If not set -> return
+        if 'mqtt_remap' not in self.type:
+            return id
+        if id in self.type['mqtt_remap']:
+            return self.type['mqtt_remap'][id]
+        return id
+
     def is_simulated_brightness(self) -> bool:
         simulated = False # Default is no
         if 'simulated_brightness' in self.config:
@@ -612,6 +621,8 @@ class Device:
             if self.has_tag(metric['id']):
                 # Topic ID to be parsed from MQTT
                 topic_item_id = metric.get('topic_id', metric["id"])
+                # Remap topic ID?
+                topic_item_id = self.get_mqtt_remap(topic_item_id)
                 args = {
                     'stateTopic': state_topic,
                     'transformationPattern': f'REGEX:(.*"{topic_item_id}".*)∩JSONPATH:$.{topic_item_id}',
