@@ -1079,23 +1079,27 @@ class Device:
             if channel_cfg:
                 channel_type = 'Switch'
                 channel_sitemap_type = 'Switch'
+                channel_group_type = 'sw'
                 channel_mode = channel.get('mode', None)
                 if channel_mode == 'dimmer':
                     channel_type = 'Dimmer'
                     channel_sitemap_type = 'Slider'
+                    channel_group_type = 'dim'
                 if channel_mode == 'ct':
                     channel_type = 'Dimmer'
                     channel_sitemap_type = 'Slider'
+                    channel_group_type = 'ct'
                 if channel_mode == 'color':
                     channel_type = 'Color'
                     channel_sitemap_type = 'Colorpicker'
+                    channel_group_type = 'color'
                 items.append(
                     MQTT_Item(
                         id=f"{channel_cfg['id']}",
                         name=channel_cfg['name'],
                         type=channel_type,
                         icon=self.get_icon(default='light'),
-                        groups=self.get_channel_groups(channel=channel['id'], type='sw'),
+                        groups=self.get_channel_groups(channel=channel['id'], type=channel_group_type),
                         expire=self.get_channel_expire(channel=channel['id']),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:{channel_id}',
@@ -1361,17 +1365,18 @@ class Device:
             for _, channel in self.channels.items():
                 y2m = channel.get('y2m', {})
                 if not y2m: continue
+                device_id = y2m.get('id', channel['id'])
                 device_name = y2m.get('name', None)
                 device_room = y2m.get('room', None)
                 device_type = y2m.get('type', 'Light')
                 device_sub_type = y2m.get('subtype', 'LIGHT.SW')
                 device_options = []
                 # FIXME: Tasmota has direct device name, no "_sw" suffix
-                if self.has_tag_any('tasmota'):
+                if self.has_tag_any('tasmota') and not self.has_tag_any('color'):
                     device_options.append('sw: \'\'')
 
                 ret.extend(self.get_y2m_js(
-                    channel['id'],
+                    device_id,
                     name=device_name,
                     room=device_room,
                     device_type=device_type,
