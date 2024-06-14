@@ -332,10 +332,10 @@ class Device:
                 channel_args['min'] = "150"
                 channel_args['max'] = "500"
             # Fix reserved values usage
-            channel['id'] = channel['id'].lower()
+            channel_id = channel['id'].lower()
             channels.append(MQTT_ThingChannel(
                 type=channel['type'],
-                id=channel['id'],
+                id=channel_id,
                 args=channel_args,
             ))
 
