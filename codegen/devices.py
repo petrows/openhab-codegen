@@ -530,6 +530,45 @@ class DEVICES:
             }
         ]
     }
+    TASMOTA_RGBW = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+            'ct',
+            'color',
+        ],
+        'device_name': 'Tasmota RGB+W dimmer',
+        'device_url': 'https://templates.blakadder.com/arilux_LC06.html',
+        'tasmota_channels': [
+            {
+                'type': 'switch',
+                'id': 'POWER',
+            },
+            {
+                'type': 'dimmer',
+                'id': 'Dimmer',
+                'mode': 'dimmer',
+            },
+            {
+                'type': 'dimmer',
+                'id': 'White',
+                'mode': 'dimmer',
+            },
+            {
+                'type': 'dimmer',
+                'id': 'CT',
+                'mode': 'ct',
+            },
+            {
+                'type': 'color',
+                'id': 'HSBColor',
+                'mode': 'color',
+            },
+        ]
+    }
     # Wemos D1 + Senseair S8
     # tele/sz_co2/SENSOR {"Time":"2023-01-27T17:41:07","S8":{"CarbonDioxide":1352}}
     TASMOTA_WEMOS_CO2 = {

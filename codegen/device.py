@@ -321,12 +321,18 @@ class Device:
                 'transformationPattern': f"JSONPATH:$.{channel['id']}",
                 'commandTopic': f"cmnd/{self.get_device_address()}/{channel['id']}",
             }
+            channel_mode = channel.get('mode', None)
             if 'switch' == channel['type']:
                 channel_args['on'] = "ON"
                 channel_args['off'] = "OFF"
             if 'dimmer' == channel['type']:
                 channel_args['min'] = "1"
                 channel_args['max'] = "100"
+            if 'ct' == channel_mode:
+                channel_args['min'] = "150"
+                channel_args['max'] = "500"
+            # Fix reserved values usage
+            channel['id'] = channel['id'].lower()
             channels.append(MQTT_ThingChannel(
                 type=channel['type'],
                 id=channel['id'],
@@ -1065,19 +1071,35 @@ class Device:
 
         for channel in self.type['tasmota_channels']:
             # Check device channels - has defined config in end-device?
-            if channel['id'] in self.channels:
-                channel_cfg = self.channels[channel['id']]
+            channel_id = channel['id'].lower()
+            channel_cfg = None
+            for ch in self.channels:
+                if ch.lower() == channel_id:
+                    channel_cfg = self.channels[ch]
+            if channel_cfg:
+                channel_type = 'Switch'
+                channel_sitemap_type = 'Switch'
+                channel_mode = channel.get('mode', None)
+                if channel_mode == 'dimmer':
+                    channel_type = 'Dimmer'
+                    channel_sitemap_type = 'Slider'
+                if channel_mode == 'ct':
+                    channel_type = 'Dimmer'
+                    channel_sitemap_type = 'Slider'
+                if channel_mode == 'color':
+                    channel_type = 'Color'
+                    channel_sitemap_type = 'Colorpicker'
                 items.append(
                     MQTT_Item(
                         id=f"{channel_cfg['id']}",
                         name=channel_cfg['name'],
-                        type='Switch',
+                        type=channel_type,
                         icon=self.get_icon(default='light'),
                         groups=self.get_channel_groups(channel=channel['id'], type='sw'),
                         expire=self.get_channel_expire(channel=channel['id']),
                         broker=self.config['mqtt_broker_id'],
-                        channel_id=f'{self.id}:{channel["id"]}',
-                        sitemap_type='Switch',
+                        channel_id=f'{self.id}:{channel_id}',
+                        sitemap_type=channel_sitemap_type,
                     )
                 )
 
