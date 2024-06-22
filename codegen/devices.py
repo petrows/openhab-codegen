@@ -203,6 +203,7 @@ class DEVICES:
             'zigbee',
             'contact',
             'ikea',
+            'activity',
             'battery',
         ],
         'device_name': 'PARASOLL Door/Window Sensor (E2013)',
