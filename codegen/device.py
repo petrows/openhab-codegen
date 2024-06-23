@@ -83,8 +83,8 @@ class Device:
 
         # Custom device options
         # Brightness limits (we have minimal default is 1 - to ensure ON state)
-        self.brightness_min = self.type.get('dim_min', 1)
-        self.brightness_max = self.type.get('dim_max', 254)
+        self.brightness_min = config_device.get('dim_min', self.type.get('dim_min', 1))
+        self.brightness_max = config_device.get('dim_max', self.type.get('dim_max', 254))
         # Color limits (Mired)
         self.ct_min = self.type.get('ct_min', 150)
         self.ct_max = self.type.get('ct_max', 500)
