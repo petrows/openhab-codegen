@@ -78,18 +78,20 @@ class Device:
         # Relay device does not have transition by default
         if self.has_tag('plug'): transition_default = 0
         # Read config / device / default option
+
+        # Transition (seconds)
         self.transition_sw = self.get_device_config_option('transition_sw', transition_default)
         self.transition_brightness = self.get_device_config_option('transition_brightness', transition_default)
 
         # Custom device options
         # Brightness limits (we have minimal default is 1 - to ensure ON state)
-        self.brightness_min = config_device.get('dim_min', self.type.get('dim_min', 1))
-        self.brightness_max = config_device.get('dim_max', self.type.get('dim_max', 254))
+        self.brightness_min = self.get_device_config_option('dim_min', 1)
+        self.brightness_max = self.get_device_config_option('dim_max', 254)
         # Color limits (Mired)
-        self.ct_min = self.type.get('ct_min', 150)
-        self.ct_max = self.type.get('ct_max', 500)
+        self.ct_min = self.get_device_config_option('ct_min', 150)
+        self.ct_max = self.get_device_config_option('ct_max', 500)
         # Color CT apply when ON
-        self.ct_auto = config_device.get('ct_auto', True)
+        self.ct_auto = self.get_device_config_option('ct_auto', True)
         # Proxy state - filter states from groups, if already set
         # Workaround: https://github.com/Koenkk/zigbee2mqtt/issues/14714
         self.proxy_state = self.type.get('proxy_state', False)
