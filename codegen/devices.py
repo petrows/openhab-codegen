@@ -121,9 +121,6 @@ class DEVICES:
             'lamp',
             'ikea',
         ],
-        # This device has no transition
-        'transition_sw': 0,
-        'transition_brightness': 0,
         'device_name': 'IKEA TRADFRI driver for wireless control',
         'device_url': 'https://www.zigbee2mqtt.io/devices/ICPSHC24-10EU-IL-1.html',
     }
@@ -213,6 +210,7 @@ class DEVICES:
         'types': [
             'zigbee',
             'leak',
+            'activity',
             'battery',
         ],
         'mqtt_remap': { 'leak': 'water_leak' },
