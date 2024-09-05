@@ -200,7 +200,8 @@ class DEVICES:
             'zigbee',
             'contact',
             'ikea',
-            'activity',
+            # Seems to be buggy, see https://github.com/Koenkk/zigbee2mqtt/issues/22579
+            # 'activity',
             'battery',
         ],
         'device_name': 'PARASOLL Door/Window Sensor (E2013)',
