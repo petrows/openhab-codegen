@@ -16,6 +16,8 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow', 'channel_args': {'on':'true','off':'false'} },
     {'id': 'contact', 'title': '[%s]', 'type': 'Contact', 'icon': 'door', 'channel_args': {'on':'false','off':'true'} },
     {'id': 'occupancy', 'title': '[%s]', 'type': 'Switch', 'icon': 'motion', 'channel_args': {'on':'true','off':'false'} },
+    {'id': 'illuminance_lux', 'title': ' light [%d %unit%]', 'type': 'Number:Illuminance', 'icon': 'sun', 'unit': 'lx' },
+    {'id': 'illuminance', 'title': ' light raw [%d]', 'type': 'Number:Dimensionless', 'icon': 'sun' },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
     {'id': 'co2', 'title': 'CO₂ [%d %unit%]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'co2_led', 'title': 'CO₂ alarm [%s]', 'type': 'Switch', 'icon': 'alarm'},

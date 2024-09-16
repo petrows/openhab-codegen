@@ -218,6 +218,18 @@ class DEVICES:
         'device_name': 'BADRING water leakage sensor (E2202)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2202.html',
     }
+    IKEA_VALLHORN = {
+        'types': [
+            'zigbee',
+            'occupancy',
+            'illuminance_lux',
+            'illuminance',
+            'activity',
+            'battery',
+        ],
+        'device_name': 'VALLHORN wireless motion sensor (E2134)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/E2134.html',
+    }
     # Sockets
     OSRAM_SMART_PLUG = {
         'types': [
