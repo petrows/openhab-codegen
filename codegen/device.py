@@ -1336,11 +1336,17 @@ class Device:
                 device_sub_type = 'LIGHT.RGB'
             if self.proxy_state:
                 device_options.append('proxy: true')
+        # Climate sensors:
         if not device_type and self.has_tag('co2'):
-            device_type = 'Sensor'
+            device_type = 'SensorClimate'
             device_options.append('co2: true')
         if not device_type and self.has_tag('temperature'):
-            device_type = 'Sensor'
+            device_type = 'SensorClimate'
+        if not device_type and self.has_tag('temperature'):
+            device_type = 'SensorClimate'
+        # Door/window sensors
+        if not device_type and self.has_tag('contact'):
+            device_type = 'SensorWindow'
 
         if device_options:
             device_options = '    ' + '\n    '.join(device_options) + ',\n'
@@ -1354,7 +1360,7 @@ class Device:
     room: ROOMS.{room},
 {device_options}}}),""".split('\n')
 
-        if device_type in ['Thermostat', 'Shutter', 'Sensor']:
+        if device_type in ['Thermostat', 'Shutter', 'SensorClimate', 'SensorWindow']:
             return f"""{device_type}({{
     id: '{id}',
     name: '{name}',
