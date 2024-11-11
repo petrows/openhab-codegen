@@ -85,6 +85,36 @@ function LightGroup(options) {
     return dev.toConfig()
 }
 
+function WindowSensorGroup(options) {
+    if (!options.type) { options.type = 'devices.types.sensor.open' }
+    let dev = new GenDevice(options)
+    // Group lights can ON/OFF
+    dev.addMQTT('open', null, options.id)
+    dev.addCapability({
+        type: 'devices.properties.event',
+        retrievable: true,
+        reportable: true,
+        parameters: {
+            instance: 'open',
+            events: [
+                {
+                    'value': 'opened',
+                    'name': 'открыто',
+                },
+                {
+                    'value': 'closed',
+                    'name': 'закрыто',
+                },
+            ]
+        },
+        state: {
+            instance: 'open',
+            value: 'opened',
+        },
+    })
+    return dev.toConfig()
+}
+
 function Light(type, options) {
     if (!options.type) { options.type = 'devices.types.light' }
     if (typeof options.sw === 'undefined') { options.sw = '_sw' }
@@ -332,6 +362,7 @@ module.exports = {
     LIGHT: LIGHT,
     Scene: Scene,
     LightGroup: LightGroup,
+    WindowSensorGroup: WindowSensorGroup,
     Light: Light,
     Thermostat: Thermostat,
     Sensor: Sensor,
