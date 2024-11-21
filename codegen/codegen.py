@@ -186,7 +186,7 @@ class codegen:
         conf_str: List[str] = list()
         # Include template
         conf_str.append('const tpl = require("./yandex2mqtt.template")')
-        conf_str.append('const { LIGHT, LightGroup, Light, Thermostat, Sensor, Shutter } = tpl')
+        conf_str.append('const { LIGHT, LightGroup, Light, Thermostat, SensorClimate, SensorWindow, Shutter } = tpl')
         conf_str.append('const ROOMS = {')
         for room_id, room in rooms.items():
             conf_str.append(f'  {room_id}: \'{room}\',')
