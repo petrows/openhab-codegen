@@ -1389,19 +1389,19 @@ class Device:
             if self.proxy_state:
                 device_options.append('proxy: true')
         # Climate sensors:
-        if not device_type and self.has_tag('co2'):
+        if not device_type and self.has_tag_any(
+            'co2', 'pressure', 'temperature', 'humidity'):
             device_type = 'SensorClimate'
-            device_options.append('co2: true')
-        if not device_type and self.has_tag('temperature'):
-            device_type = 'SensorClimate'
-        if not device_type and self.has_tag('humidity'):
-            device_type = 'SensorClimate'
+            if self.has_tag('co2'):
+                device_options.append('co2: true')
+            if self.has_tag('pressure'):
+                device_options.append('pressure: true')
         # Door/window sensors
         if not device_type and self.has_tag('contact'):
             device_type = 'SensorWindow'
 
         if device_options:
-            device_options = '    ' + '\n    '.join(device_options) + ',\n'
+            device_options = '    ' + ',\n    '.join(device_options) + ',\n'
         else:
             device_options = ''
 
