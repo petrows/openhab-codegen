@@ -20,7 +20,7 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'illuminance_lux', 'title': ' light [%d %unit%]', 'type': 'Number:Illuminance', 'icon': 'sun', 'unit': 'lx' },
     {'id': 'illuminance', 'title': ' light raw [%d]', 'type': 'Number:Dimensionless', 'icon': 'sun' },
     {'id': 'position', 'title': 'POS [%.0f %%]', 'type': 'Number:Dimensionless', 'icon': 'heating', 'unit': '%' },
-    {'id': 'co2', 'title': 'CO₂ [%d %unit%]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
+    {'id': 'co2', 'title': 'CO₂ [%d ppm]', 'type': 'Number:Dimensionless', 'icon': 'co2', 'unit': 'ppm' },
     {'id': 'co2_led', 'title': 'CO₂ alarm [%s]', 'type': 'Switch', 'icon': 'alarm'},
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
@@ -327,7 +327,7 @@ class Device:
             for channel in self.type['tasmota_channels']:
                 channel_args = {
                     'stateTopic': result_topic,
-                    'transformationPattern': f"JSONPATH:$.{channel['id']}",
+                    'transformationPattern': f'REGEX:(.*"{channel['id']}".*)∩JSONPATH:$.{channel['id']}',
                     'commandTopic': f"cmnd/{self.get_device_address()}/{channel['id']}",
                 }
                 channel_mode = channel.get('mode', None)
