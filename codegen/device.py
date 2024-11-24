@@ -1422,7 +1422,7 @@ class Device:
         return []
 
     def get_y2m_config(self):
-        if self.channels:
+        if self.channels and ('tasmota_sensors' not in self.type):
             ret = []
             for _, channel in self.channels.items():
                 y2m = channel.get('y2m', {})
