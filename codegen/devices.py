@@ -609,6 +609,11 @@ class DEVICES:
             'rssi',
             'bssid',
             'la',
+            'co2',
+            'temperature',
+            'humidity',
+            'dewpoint',
+            'pressure',
         ],
         'device_name': 'PWS room sensor v2',
         'device_url': 'https://oshwlab.com/petrows/wemos-d1-room-sensor',
@@ -635,6 +640,45 @@ class DEVICES:
                 'type': 'co2',
                 'path': '.S8.CarbonDioxide',
             },
+            {
+                'id': 'temperature',
+                'type': 'temperature',
+                'path': '.AHT2X.Temperature',
+            },
+            {
+                'id': 'humidity',
+                'type': 'humidity',
+                'path': '.AHT2X.Humidity',
+            },
+            {
+                'id': 'dewpoint',
+                'type': 'temperature',
+                'path': '.AHT2X.DewPoint',
+            },
+            {
+                'id': 'pressure',
+                'type': 'pressure',
+                'path': '.BMP280.Pressure',
+            },
+        ]
+    }
+    # Reduced version (no co2)
+    TASMOTA_PWS_ROOM_SENSOR_V2_NOCO2 = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+            'temperature',
+            'humidity',
+            'dewpoint',
+            'pressure',
+        ],
+        'device_name': 'PWS room sensor v2 (no co2)',
+        'device_url': 'https://oshwlab.com/petrows/wemos-d1-room-sensor',
+        'tasmota_channels': [],
+        'tasmota_sensors': [
             {
                 'id': 'temperature',
                 'type': 'temperature',

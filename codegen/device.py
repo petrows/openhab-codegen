@@ -1394,7 +1394,7 @@ class Device:
             device_options.append('co2: true')
         if not device_type and self.has_tag('temperature'):
             device_type = 'SensorClimate'
-        if not device_type and self.has_tag('temperature'):
+        if not device_type and self.has_tag('humidity'):
             device_type = 'SensorClimate'
         # Door/window sensors
         if not device_type and self.has_tag('contact'):
