@@ -11,6 +11,7 @@ import jinja2
 DEVICE_SIMPLE_CHANNELS = [
     {'id': 'temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
     {'id': 'local_temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
+    {'id': 'dewpoint', 'title': 'dewpoint [%.0f %unit%]', 'type': 'Number:Temperature', 'icon': 'temperature', 'unit': 'C°' },
     {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%' },
     {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure', 'unit': 'hPa' },
     {'id': 'leak', 'title': '[%s]', 'type': 'Switch', 'icon': 'flow', 'channel_args': {'on':'true','off':'false'} },
@@ -39,6 +40,7 @@ class Device:
         self.tags = config_type['types'] # Device 'tags'
         self.config_device = config_device
         self.channels = config_device.get('channels', {})
+        self.sensors = config_device.get('sensors', {})
         self.expire = config_device.get('expire', None)
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
@@ -276,6 +278,7 @@ class Device:
         channels = []
 
         state_topic = f"tele/{self.get_device_address()}/STATE"
+        sensor_topic = f"tele/{self.get_device_address()}/SENSOR"
         result_topic = f"stat/{self.get_device_address()}/RESULT"
 
         # All tasmota reports some standart channels (WiFi signal, etc)
@@ -319,29 +322,52 @@ class Device:
 
         # Enumerate device-specific channels
 
-        for channel in self.type['tasmota_channels']:
-            channel_args = {
-                'stateTopic': result_topic,
-                'transformationPattern': f"JSONPATH:$.{channel['id']}",
-                'commandTopic': f"cmnd/{self.get_device_address()}/{channel['id']}",
-            }
-            channel_mode = channel.get('mode', None)
-            if 'switch' == channel['type']:
-                channel_args['on'] = "ON"
-                channel_args['off'] = "OFF"
-            if 'dimmer' == channel['type']:
-                channel_args['min'] = "1"
-                channel_args['max'] = "100"
-            if 'ct' == channel_mode:
-                channel_args['min'] = "150"
-                channel_args['max'] = "500"
-            # Fix reserved values usage
-            channel_id = channel['id'].lower()
-            channels.append(MQTT_ThingChannel(
-                type=channel['type'],
-                id=channel_id,
-                args=channel_args,
-            ))
+        # Tasmota control channels
+        if 'tasmota_channels' in self.type:
+            for channel in self.type['tasmota_channels']:
+                channel_args = {
+                    'stateTopic': result_topic,
+                    'transformationPattern': f"JSONPATH:$.{channel['id']}",
+                    'commandTopic': f"cmnd/{self.get_device_address()}/{channel['id']}",
+                }
+                channel_mode = channel.get('mode', None)
+                if 'switch' == channel['type']:
+                    channel_args['on'] = "ON"
+                    channel_args['off'] = "OFF"
+                if 'dimmer' == channel['type']:
+                    channel_args['min'] = "1"
+                    channel_args['max'] = "100"
+                if 'ct' == channel_mode:
+                    channel_args['min'] = "150"
+                    channel_args['max'] = "500"
+                # Fix reserved values usage
+                channel_id = channel['id'].lower()
+                channels.append(MQTT_ThingChannel(
+                    type=channel['type'],
+                    id=channel_id,
+                    args=channel_args,
+                ))
+
+        # Tasmota sensors
+        if 'tasmota_sensors' in self.type:
+            for channel in self.type['tasmota_sensors']:
+                channel_args = {
+                    'stateTopic': sensor_topic,
+                    'transformationPattern': f"JSONPATH:${channel['path']}",
+                }
+                # Fix reserved values usage
+                channel_id = channel['id'].lower()
+                # Find channel in simple-channels
+                channel_simple = next((x for x in DEVICE_SIMPLE_CHANNELS if x['id'] == channel_id), None)
+                if channel_simple:
+                    if 'unit' in channel_simple:
+                        channel_args['unit'] = channel_simple['unit']
+
+                channels.append(MQTT_ThingChannel(
+                    type='number',
+                    id=channel_id,
+                    args=channel_args,
+                ))
 
         # Get Thing
 
@@ -1108,6 +1134,32 @@ class Device:
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:{channel_id}',
                         sitemap_type=channel_sitemap_type,
+                    )
+                )
+
+        # Tasmota sensors
+        if 'tasmota_sensors' in self.type:
+            for channel in self.type['tasmota_sensors']:
+                channel_id = channel['id'].lower()
+                channel_group_type = channel['id'].lower()
+                # Find channel in simple-channels
+                channel_simple = next((x for x in DEVICE_SIMPLE_CHANNELS if x['id'] == channel_id), None)
+                if not channel_simple:
+                    continue
+                channel_icon = channel_id
+                if 'icon' in channel_simple:
+                    channel_icon = channel_simple['icon']
+
+                items.append(
+                    MQTT_Item(
+                        id=f"{self.id}_{channel_id}",
+                        name=f'{self.name} {channel_simple['title']}',
+                        type=channel_simple['type'],
+                        icon=self.get_icon(default=channel_icon),
+                        groups=self.get_channel_groups(channel=channel_id, type=channel_group_type),
+                        broker=self.config['mqtt_broker_id'],
+                        channel_id=f'{self.id}:{channel_id}',
+                        sitemap_type='Text',
                     )
                 )
 

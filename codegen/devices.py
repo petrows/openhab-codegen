@@ -600,6 +600,64 @@ class DEVICES:
             },
         ]
     }
+    # PWS room sensor v2
+    # SENSOR = {"Time":"2024-11-21T22:42:47","BMP280":{"Temperature":21.4,"Pressure":983.2},"S8":{"CarbonDioxide":620},"AHT2X":{"Temperature":20.4,"Humidity":49.0,"DewPoint":9.3},"PressureUnit":"hPa","TempUnit":"C"}
+    TASMOTA_PWS_ROOM_SENSOR_V2 = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+        ],
+        'device_name': 'PWS room sensor v2',
+        'device_url': 'https://oshwlab.com/petrows/wemos-d1-room-sensor',
+        'tasmota_channels': [
+            # R
+            {
+                'type': 'switch',
+                'id': 'POWER1',
+            },
+            # Y
+            {
+                'type': 'switch',
+                'id': 'POWER2',
+            },
+            # G
+            {
+                'type': 'switch',
+                'id': 'POWER3',
+            },
+        ],
+        'tasmota_sensors': [
+            {
+                'id': 'co2',
+                'type': 'co2',
+                'path': '.S8.CarbonDioxide',
+            },
+            {
+                'id': 'temperature',
+                'type': 'temperature',
+                'path': '.AHT2X.Temperature',
+            },
+            {
+                'id': 'humidity',
+                'type': 'humidity',
+                'path': '.AHT2X.Humidity',
+            },
+            {
+                'id': 'dewpoint',
+                'type': 'temperature',
+                'path': '.AHT2X.DewPoint',
+            },
+            {
+                'id': 'pressure',
+                'type': 'pressure',
+                'path': '.BMP280.Pressure',
+            },
+        ]
+    }
+
     SILVERCREST_THERMOSTAT_368308_2010 = {
         'types': [
             'zigbee',

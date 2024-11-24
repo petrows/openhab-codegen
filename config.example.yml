@@ -12,6 +12,20 @@ devices:
           - g_light_all
           - g_light_kg
 
+  - type: TASMOTA_PWS_ROOM_SENSOR_V2
+    id: room_sensor_v2
+    name: 'Tasmota PWS room sensor v2 example'
+    channels:
+      POWER1:
+        id: room_sensor_v2_led_r
+        name: 'Led R'
+      POWER2:
+        id: room_sensor_v2_led_y
+        name: 'Led Y'
+      POWER3:
+        id: room_sensor_v2_led_g
+        name: 'Led G'
+
   - name: Aldi test
     id: aldi_test
     zigbee_id: '0x60a423fffe4b91cf'
