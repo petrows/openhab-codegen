@@ -211,6 +211,7 @@ class DEVICES:
         'types': [
             'zigbee',
             'leak',
+            'ikea',
             'activity',
             'battery',
         ],
@@ -222,6 +223,7 @@ class DEVICES:
         'types': [
             'zigbee',
             'occupancy',
+            'ikea',
             'illuminance_lux',
             'illuminance',
             'activity',
@@ -229,6 +231,19 @@ class DEVICES:
         ],
         'device_name': 'VALLHORN wireless motion sensor (E2134)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2134.html',
+    }
+    IKEA_INSPELNING = {
+        'types': [
+            'zigbee',
+            'plug',
+            'ikea',
+            'ac_current',
+            'ac_energy',
+            'ac_power',
+            'ac_voltage',
+        ],
+        'device_name': 'INSPELNING smart plug (E2206)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/E2206.html',
     }
     # Sockets
     OSRAM_SMART_PLUG = {
