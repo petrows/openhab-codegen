@@ -67,7 +67,7 @@ class MQTT_Item(Item):
         item_channel.append(f"channel=\"mqtt:topic:{broker}:{channel_id}\"")
 
         if expire:
-            item_channel.append(f"expire=\"{expire}\"")
+            item_channel.append(f"expire=\"{expire}\" [ignoreStateUpdates=\"true\"]")
         item_conf.append("{" + ", ".join(item_channel) + "}")
 
         self.conf_str.append(" ".join(item_conf))
