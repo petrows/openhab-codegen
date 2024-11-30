@@ -1,4 +1,5 @@
 from pydoc_data.topics import topics
+import re
 from typing import List
 import numpy as np
 from codegen.item import Generic_Item, Item, MQTT_Item
@@ -42,6 +43,7 @@ class Device:
         self.channels = config_device.get('channels', {})
         self.sensors = config_device.get('sensors', {})
         self.expire = config_device.get('expire', None)
+        self.expire_sec = self.get_expire_sec()
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
         self.groups_skip_auto = config_device.get('groups_skip_auto', [])
@@ -215,6 +217,22 @@ class Device:
         if id in self.type['mqtt_remap']:
             return self.type['mqtt_remap'][id]
         return id
+
+    def get_expire_sec(self) -> int:
+        ret = 0
+        if not self.expire:
+            return ret
+        s = re.search(r'(\d+)s', self.expire)
+        if s: ret = ret + int(s.group(1))
+        s = re.search(r'(\d+)m', self.expire)
+        if s: ret = ret + int(s.group(1)) * 60
+        s = re.search(r'(\d+)h', self.expire)
+        if s: ret = ret + int(s.group(1)) * 60 * 60
+
+        if not ret:
+            raise RuntimeError("Unknown expire format " + self.expire)
+
+        return ret
 
     def is_simulated_brightness(self) -> bool:
         simulated = False # Default is no
@@ -400,7 +418,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'JSONPATH:$.state',
-                    'transformationPatternOut': f'JS:codegen-cmd-value.js?f=state&t={self.transition_sw}',
+                    'transformationPatternOut': f'JS:codegen-cmd-value.js?f=state&t={self.transition_sw}&exp={self.expire_sec}',
                 },
             ))
         # Device has switch (multi-gang) option
