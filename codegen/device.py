@@ -25,10 +25,10 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'co2_led', 'title': 'CO₂ alarm [%s]', 'type': 'Switch', 'icon': 'alarm'},
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
-    {'id': 'ac_voltage', 'title': '[%.0f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage'},
-    {'id': 'ac_current', 'title': '[%.0f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current'},
-    {'id': 'ac_power', 'title': '[%.0f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power'},
-    {'id': 'ac_energy', 'title': '[%.0f kWh]', 'type': 'Number:Energy', 'icon': 'energy', 'unit': 'kWh', 'topic_id': 'energy'},
+    {'id': 'ac_voltage', 'title': '[%.1f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage'},
+    {'id': 'ac_current', 'title': '[%.2f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current'},
+    {'id': 'ac_power', 'title': '[%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power'},
+    {'id': 'ac_energy', 'title': '[%.1f kWh]', 'type': 'Number:Energy', 'icon': 'energy', 'unit': 'kWh', 'topic_id': 'energy'},
 ]
 
 class Device:
