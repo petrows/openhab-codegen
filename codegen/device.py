@@ -25,10 +25,22 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'co2_led', 'title': 'CO₂ alarm [%s]', 'type': 'Switch', 'icon': 'alarm'},
     {'id': 'battery', 'title': ' BAT [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'battery', 'unit': '%'},
     {'id': 'battery_voltage', 'title': '[%.0f mV]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'mV'},
+    {'id': 'ac_frequency', 'title': 'freq [%d Hz]', 'type': 'Number:Frequency', 'icon': 'energy', 'unit': 'Hz', 'topic_id': 'ac_frequency'},
+    {'id': 'ac_power_factor', 'title': 'factor [%d %%]', 'type': 'Number:Dimensionless', 'icon': 'energy', 'unit': '%', 'topic_id': 'power_factor'},
     {'id': 'ac_voltage', 'title': '[%.1f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage'},
+    {'id': 'ac_voltage_a', 'title': 'A [%.1f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage_a'},
+    {'id': 'ac_voltage_b', 'title': 'B [%.1f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage_b'},
+    {'id': 'ac_voltage_c', 'title': 'C [%.1f V]', 'type': 'Number:ElectricPotential', 'icon': 'energy', 'unit': 'V', 'topic_id': 'voltage_c'},
     {'id': 'ac_current', 'title': '[%.2f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current'},
+    {'id': 'ac_current_a', 'title': 'A [%.2f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current_a'},
+    {'id': 'ac_current_b', 'title': 'B [%.2f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current_b'},
+    {'id': 'ac_current_c', 'title': 'C [%.2f A]', 'type': 'Number:ElectricCurrent', 'icon': 'energy', 'unit': 'A', 'topic_id': 'current_c'},
     {'id': 'ac_power', 'title': '[%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power'},
+    {'id': 'ac_power_a', 'title': 'A [%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power_a'},
+    {'id': 'ac_power_b', 'title': 'B [%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power_b'},
+    {'id': 'ac_power_c', 'title': 'C [%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power_c'},
     {'id': 'ac_energy', 'title': '[%.1f kWh]', 'type': 'Number:Energy', 'icon': 'energy', 'unit': 'kWh', 'topic_id': 'energy'},
+
 ]
 
 class Device:

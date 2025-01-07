@@ -493,6 +493,31 @@ class DEVICES:
         'device_name': 'Livarno Lux E14 candle RGB (HG07834B)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/HG07834B.html#lidl-hg07834b',
     }
+
+    # Zemnismart 3-phase power meter
+    ZEMNISMART_3PHASE_METER = {
+        'types': [
+            'zigbee',
+            'zigbee',
+            'ac_power_factor',
+            'ac_frequency',
+            'ac_energy',
+            'ac_power',
+            'ac_voltage_a',
+            'ac_voltage_b',
+            'ac_voltage_c',
+            'ac_current_a',
+            'ac_current_b',
+            'ac_current_c',
+            'ac_power_a',
+            'ac_power_b',
+            'ac_power_c',
+        ],
+        'device_name': 'Smart energy monitor for 3P+N system',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/SPM02V2.5.html#tuya-spm02v2.5',
+    }
+
+
     # DIY
     DIY_CC2540_ROUTER = {
         'types': [
