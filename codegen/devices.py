@@ -232,6 +232,15 @@ class DEVICES:
         'device_name': 'VALLHORN wireless motion sensor (E2134)',
         'device_url': 'https://www.zigbee2mqtt.io/devices/E2134.html',
     }
+    IKEA_TRETAKT = {
+        'types': [
+            'zigbee',
+            'plug',
+            'ikea',
+        ],
+        'device_name': 'TRETAKT smart plug (E22x4)',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/E22x4.html',
+    }
     IKEA_INSPELNING = {
         'types': [
             'zigbee',
