@@ -1418,6 +1418,10 @@ class Device:
                 device_sub_type = 'LIGHT.RGB'
             if self.proxy_state:
                 device_options.append('proxy: true')
+        if not device_type and self.has_tag('plug'):
+            device_type = 'Light'
+            device_sub_type = 'LIGHT.SW'
+            device_options.append('type: \'devices.types.switch\'')
         # Climate sensors:
         if not device_type and self.has_tag_any(
             'co2', 'pressure', 'temperature', 'humidity'):
