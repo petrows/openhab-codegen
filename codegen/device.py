@@ -538,7 +538,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=' + str(self.transition_brightness),
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=' + str(self.transition_brightness) + '&exp=0',
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },
@@ -551,7 +551,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"brightness".*)∩JS:codegen-brightness.js',
-                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=0',
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=brightness&t=0&exp=0',
                     'min': self.brightness_min,  # Dedvice type could change that
                     'max': self.brightness_max,
                 },
@@ -565,7 +565,7 @@ class Device:
                     'stateTopic': state_topic,
                     'commandTopic': command_topic,
                     'transformationPattern': 'REGEX:(.*"color_temp".*)∩JSONPATH:$.color_temp',
-                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=color_temp&t=3',
+                    'transformationPatternOut': 'JS:codegen-cmd-value.js?f=color_temp&t=3&exp=0',
                     'min': self.ct_min,
                     'max': self.ct_max,
                 },
