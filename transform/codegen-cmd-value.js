@@ -19,4 +19,4 @@
         out['off_wait_time'] = 1
     }
     return JSON.stringify(out)
-})(input, f, t, exp)
+})(input, f, t = 0, exp = 0)
