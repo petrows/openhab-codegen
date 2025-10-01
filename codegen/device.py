@@ -272,6 +272,17 @@ class Device:
     def has_tag_any(self, *tags) -> bool:
         return np.in1d(tags, self.tags).any()
 
+    def has_tasmota_sensors_types(self) -> List[str]:
+        if 'tasmota_sensors' in self.type:
+            return [x['type'] for x in self.type['tasmota_sensors']]
+        return []
+
+    def has_tasmota_sensor(self, tag: str) -> bool:
+        return tag in self.has_tasmota_sensors_types()
+
+    def has_tasmota_sensor_any(self, *tags) -> bool:
+        return np.in1d(tags, self.has_tasmota_sensors_types()).any()
+
     def get_rules(self) -> List[str]:
         return self.rules
 
@@ -1108,6 +1119,7 @@ class Device:
             if self.has_tag(metric['id']):
                 if 'icon' not in metric:
                     metric['icon'] = metric['id']
+                # print(f"Simple cahhenl for {self.id}: {metric['id']}, total items: {len(items)}")
                 items.append(
                     MQTT_Item(
                         id=f'{self.id}_{metric["id"]}',
@@ -1425,12 +1437,17 @@ class Device:
             device_sub_type = 'LIGHT.SW'
             device_options.append('type: \'devices.types.switch\'')
         # Climate sensors:
-        if not device_type and self.has_tag_any(
-            'co2', 'pressure', 'temperature', 'humidity'):
+        if not device_type and (
+                self.has_tag_any(
+                    'co2', 'pressure', 'temperature', 'humidity')
+                or
+                self.has_tasmota_sensor_any(
+                    'co2', 'pressure', 'temperature', 'humidity')
+            ):
             device_type = 'SensorClimate'
-            if self.has_tag('co2'):
+            if self.has_tag('co2') or self.has_tasmota_sensor('co2'):
                 device_options.append('co2: true')
-            if self.has_tag('pressure'):
+            if self.has_tag('pressure') or self.has_tasmota_sensor('pressure'):
                 device_options.append('pressure: true')
         # Door/window sensors
         if not device_type and self.has_tag('contact'):
