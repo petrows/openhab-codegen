@@ -32,7 +32,7 @@ if __name__ == "__main__":
     parser.add_argument(
         'config_path',
         type=Path,
-        help='Devices config for codegen',
+        help='Devices configs folder for codegen, should contain /conf and /devices folders to traverse',
     )
     parser.add_argument(
         'openhab_path',

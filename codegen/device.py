@@ -418,8 +418,10 @@ class Device:
 
         channels = []
 
-        command_topic = f"zigbee2mqtt/{self.id}/set"
-        state_topic = f"zigbee2mqtt/{self.id}"
+        mqtt_topic = self.config.get('mqtt_topic', 'zigbee2mqtt')
+
+        command_topic = f"{mqtt_topic}/{self.id}/set"
+        state_topic = f"{mqtt_topic}/{self.id}"
 
         # Device has switch (Lamp, Wall socket)
         if self.has_tag_any('lamp', 'plug'):

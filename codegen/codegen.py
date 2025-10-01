@@ -36,6 +36,8 @@ class codegen:
 
     config_defaults = {
         "mqtt_broker_id": "openhab",
+        # Default topic for MQTT
+        "mqtt_topic": "zigbee2mqtt",
         # Use deivce ID as topic for Zegbee
         "zibee_pretty_name_topic": True,
     }
@@ -48,20 +50,31 @@ class codegen:
         self.write = write
         self.self_path = Path(__file__).parent.parent
         self.openhab_path = openhab_path
-        self.devices:List[Device] = list()
+        self.configs = list()
         pass
-
 
     def load_config_yaml(self, config_path: Path):
         """
             Load config defines from YAML format
+            from <path>/conf/*.yaml
         """
-
-        with open(config_path, "r") as stream:
-            config = yaml.safe_load(stream)
-            self.config = self.config_defaults | config['config']
-            self.config_devices = config['devices']
-            self.config_y2m = config.get('y2m', {'rooms':{}})
+        self.config_path = config_path
+        confgis_list = config_path.glob('conf/*.yaml')
+        for config_file in confgis_list:
+            with open(config_file, "r") as stream:
+                logging.info("Reading config from %s", str(config_file))
+                config_yaml = yaml.safe_load(stream)
+                config_obj = {
+                    'id': config_file.stem,
+                    'file': config_file,
+                    'config': self.config_defaults | config_yaml['config'],
+                    'devices': config_yaml.get('devices', []),
+                    'devices_obj': list(),
+                }
+                self.configs.append(config_obj)
+        with open(config_path / 'y2m.yaml', "r") as stream:
+            config_yaml = yaml.safe_load(stream)
+            self.config_y2m = config_yaml.get('y2m', {'rooms':{}})
 
     def write_file(self, data, file=Path):
         # Join data file to strings + trailing \n
@@ -72,6 +85,7 @@ class codegen:
             with open(file, 'r') as f:
                 things_conf_old = f.readlines()
         except:
+            logging.info("File %s does not exist, will be created", str(file))
             pass
         # Disaply diff
         if things_conf_old:
@@ -97,14 +111,14 @@ class codegen:
         # Generate THINGS
         conf_str: List[str] = list()
         conf_str.extend(PREAMBULA)
-        for device in self.devices:
-            things = device.get_things()
+        for config in self.configs:
+            for device in config['devices_obj']:
+                things = device.get_things()
+                conf_str.extend(device.get_comment())
+                for thing in things:
+                    conf_str.extend(thing.get_config())
 
-            conf_str.extend(device.get_comment())
-            for thing in things:
-                conf_str.extend(thing.get_config())
-
-            logging.debug("Device: %s", device.get_label())
+                logging.debug("Device: %s", device.get_label())
 
         self.write_file(conf_str, file)
 
@@ -113,12 +127,13 @@ class codegen:
         # Generate ITEMS
         conf_str: List[str] = list()
         conf_str.extend(PREAMBULA)
-        for device in self.devices:
-            items = device.get_items()
+        for config in self.configs:
+            for device in config['devices_obj']:
+                items = device.get_items()
 
-            conf_str.extend(device.get_comment())
-            for item in items:
-                conf_str.extend(item.get_config())
+                conf_str.extend(device.get_comment())
+                for item in items:
+                    conf_str.extend(item.get_config())
 
         self.write_file(conf_str, file)
 
@@ -135,11 +150,13 @@ class codegen:
         # Generate rules list
         conf_str: List[str] = list()
         conf_str.extend(PREAMBULA)
-        for device in self.devices:
-            conf_str.extend(device.get_rules_header())
+        for config in self.configs:
+            for device in config['devices_obj']:
+                conf_str.extend(device.get_rules_header())
         conf_str.extend(['// ----------------------------'])
-        for device in self.devices:
-            conf_str.extend(device.get_rules())
+        for config in self.configs:
+            for device in config['devices_obj']:
+                conf_str.extend(device.get_rules())
 
         self.write_file(conf_str, file)
 
@@ -149,29 +166,32 @@ class codegen:
         conf_str.extend(PREAMBULA)
         conf_str.extend(['sitemap gen label="GEN ITEMS"','{'])
 
-        for device in self.devices:
-            conf_str.extend([f'Frame label="{device.get_label()}" {{'])
-            items = device.get_items()
-            conf_str.extend(device.get_comment())
-            for item in items:
-                conf_str.extend(item.get_sitemap_config())
+        for config in self.configs:
+            conf_str.extend([f'Text label="Z2M {config["id"]}" {{'])
+            for device in config['devices_obj']:
+                conf_str.extend([f'Frame label="{device.get_label()}" {{'])
+                items = device.get_items()
+                conf_str.extend(device.get_comment())
+                for item in items:
+                    conf_str.extend(item.get_sitemap_config())
+                conf_str.extend(['}'])
             conf_str.extend(['}'])
 
         conf_str.extend(['}'])
 
         self.write_file(conf_str, file)
 
-    def update_devices_yaml(self, file=Path):
-        # Generate devices.yaml
-        conf = {}
-        for device in self.devices:
-            if device.is_zigbee():
-                device_conf = {}
-                device_conf['friendly_name'] = device.get_id()
-                device_conf = device_conf | device.get_zigbee_device_config()
-                conf[device.get_device_address()] = device_conf
-
-        self.write_file(yaml.dump(conf).splitlines(), file)
+    def update_devices_yaml(self, dir=Path):
+        # Generate devices.yaml (per-instance)
+        for config in self.configs:
+            z2m_devices_conf = {}
+            for device in config['devices_obj']:
+                if device.is_zigbee():
+                    device_conf = {}
+                    device_conf['friendly_name'] = device.get_id()
+                    device_conf = device_conf | device.get_zigbee_device_config()
+                    z2m_devices_conf[device.get_device_address()] = device_conf
+            self.write_file(yaml.dump(z2m_devices_conf).splitlines(), dir / f"{config['id']}.yaml")
 
     def update_y2m_js(self, file=Path):
         # Generate yandex2mqtt
@@ -193,9 +213,10 @@ class codegen:
         conf_str.append('}')
         conf_str.append('module.exports = {')
         conf_str.append('devices: [')
-        for device in self.devices:
-            if device.has_y2m():
-                conf_str.extend(device.get_y2m_config())
+        for config in self.configs:
+            for device in config['devices_obj']:
+                if device.has_y2m():
+                    conf_str.extend(device.get_y2m_config())
         conf_str.append(']')
         conf_str.append('}')
         self.write_file(conf_str, file)
@@ -213,19 +234,20 @@ class codegen:
         self.item_addresses = []
         self.item_ids = []
 
-        for device in self.config_devices:
-            device_obj = device_registry.get_device(device, self.config)
-            device_addr = device_obj.get_device_address()
-            device_id = device_obj.get_id()
-            self.devices.append(device_obj)
-            if device_addr in self.item_addresses:
-                raise Exception(f"Device Address {device_addr} is not unique!")
-            self.item_addresses.append(device_addr)
-            if device_id in self.item_ids:
-                raise Exception(f"Device ID {device_id} is not unique!")
-            self.item_ids.append(device_id)
+        for config in self.configs:
+            for device in config['devices']:
+                device_obj = device_registry.get_device(device, config['config'])
+                device_addr = device_obj.get_device_address()
+                device_id = device_obj.get_id()
+                config['devices_obj'].append(device_obj)
+                if device_addr in self.item_addresses:
+                    raise Exception(f"Device Address {device_addr} is not unique!")
+                self.item_addresses.append(device_addr)
+                if device_id in self.item_ids:
+                    raise Exception(f"Device ID {device_id} is not unique!")
+                self.item_ids.append(device_id)
 
-        logging.info("Processing %d devices", len(self.devices))
+            logging.info("Processing %d devices for %s", len(config['devices_obj']), config['id'])
 
         self.update_things(
             file=self.openhab_path / "things" / "gen_things.things",
@@ -247,8 +269,9 @@ class codegen:
             dir=self.openhab_path / "transform",
         )
 
+        # One file per-instance
         self.update_devices_yaml(
-            file=self.openhab_path / "devices.yaml",
+            dir=self.config_path / "devices/",
         )
 
         self.update_y2m_js(

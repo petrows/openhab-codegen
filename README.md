@@ -3,6 +3,8 @@
 Generates repeated configs for Zigbbe / Tasmota devices,
 based on MQTT binding.
 
+Uses multiply configs.
+
 ## Device options
 
 ### Thermostats
