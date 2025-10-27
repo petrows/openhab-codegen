@@ -202,8 +202,12 @@ class Device:
         groups = []
         if not type in self.groups_skip_auto:
             groups.append('g_all_' + type)
+        # Get groups for registered channels (having 'channels' section)
         if channel in self.channels and 'groups' in self.channels[channel] and type in self.channels[channel]['groups']:
             groups.extend(self.channels[channel]['groups'][type])
+        # Get groups for device-wide groups (having 'groups' section)
+        if type in self.groups:
+            groups.extend(self.groups[type])
         return groups
 
     def get_icon(self, default='light') -> str:
