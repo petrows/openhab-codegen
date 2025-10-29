@@ -126,6 +126,7 @@ class Device:
             Set global options (like broker address, settings, etc)
         """
         self.config = config_global
+        self.mqtt_topic = self.config.get('mqtt_topic', 'zigbee2mqtt')
 
     def get_device_config_option(self, option, default):
         """
@@ -433,10 +434,8 @@ class Device:
 
         channels = []
 
-        mqtt_topic = self.config.get('mqtt_topic', 'zigbee2mqtt')
-
-        command_topic = f"{mqtt_topic}/{self.id}/set"
-        state_topic = f"{mqtt_topic}/{self.id}"
+        command_topic = f"{self.mqtt_topic}/{self.id}/set"
+        state_topic = f"{self.mqtt_topic}/{self.id}"
 
         # Device has switch (Lamp, Wall socket)
         if self.has_tag_any('lamp', 'plug'):

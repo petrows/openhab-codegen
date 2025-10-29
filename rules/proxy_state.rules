@@ -18,7 +18,7 @@ then
         {%- if item.proxy_state_request %}
         // Send request for status - to ensure we are in sync
         val mq = getActions("mqtt","mqtt:broker:{{ item.config.mqtt_broker_id }}")
-        mq.publishMQTT("zigbee2mqtt/{{ item.id }}/get","{\"state\":\"\"}")
+        mq.publishMQTT("{{ item.mqtt_topic }}/{{ item.id }}/get","{\"state\":\"\"}")
         {%- endif %}
     }
 end
