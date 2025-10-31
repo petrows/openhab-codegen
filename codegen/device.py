@@ -625,7 +625,7 @@ class Device:
                     args={
                         'stateTopic': state_topic,
                         'transformationPattern': 'REGEX:(.*"action_brightness_delta".*)∩JSONPATH:$.brightness',
-                        'min': 0,
+                        'min': 1,
                         'max': 255,
                     },
                 ))
