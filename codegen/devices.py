@@ -36,6 +36,17 @@ class DEVICES:
     # =========================================================================
 
     # IKEA Lamps
+    IKEA_KAJPLATS_CT = {
+        'types': [
+            'zigbee',
+            'lamp',
+            'ikea',
+            'ct',
+        ],
+        'device_name': 'IKEA KAJPLATS white spectrum light',
+        'device_url': 'https://www.zigbee2mqtt.io/devices/KAJPLATS_CT.html',
+        # 'ct_max': 454,
+    }
     IKEA_TRADFRI_LAMP_CLEAR_806 = {
         'types': [
             'zigbee',
