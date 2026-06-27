@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 # # Devices, used in this configuration
-from ast import Str
 from typing import Any
 
 from codegen.device import Device
