@@ -40,7 +40,6 @@ DEVICE_SIMPLE_CHANNELS = [
     {'id': 'ac_power_b', 'title': 'B [%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power_b'},
     {'id': 'ac_power_c', 'title': 'C [%.1f W]', 'type': 'Number:Power', 'icon': 'energy', 'unit': 'W', 'topic_id': 'power_c'},
     {'id': 'ac_energy', 'title': '[%.1f kWh]', 'type': 'Number:Energy', 'icon': 'energy', 'unit': 'kWh', 'topic_id': 'energy'},
-
 ]
 
 class Device:
@@ -201,7 +200,7 @@ class Device:
 
     def get_channel_groups(self, channel: str, type: str) -> List[str]:
         groups = []
-        if not type in self.groups_skip_auto:
+        if type and not type in self.groups_skip_auto:
             groups.append('g_all_' + type)
         # Get groups for registered channels (having 'channels' section)
         if channel in self.channels and 'groups' in self.channels[channel] and type in self.channels[channel]['groups']:
@@ -386,6 +385,9 @@ class Device:
                 if 'ct' == channel_mode:
                     channel_args['min'] = "150"
                     channel_args['max'] = "500"
+                channel_unit = channel.get('unit', None)
+                if (channel_unit):
+                    channel_args['unit'] = channel_unit
                 # Fix reserved values usage
                 channel_id = channel['id'].lower()
                 channels.append(MQTT_ThingChannel(
@@ -1158,6 +1160,7 @@ class Device:
                 channel_sitemap_type = 'Switch'
                 channel_group_type = 'sw'
                 channel_mode = channel.get('mode', None)
+                channel_icon = channel.get('icon', 'light')
                 if channel_mode == 'dimmer':
                     channel_type = 'Dimmer'
                     channel_sitemap_type = 'Slider'
@@ -1170,12 +1173,20 @@ class Device:
                     channel_type = 'Color'
                     channel_sitemap_type = 'Colorpicker'
                     channel_group_type = 'color'
+                if channel_mode == 'temperature':
+                    channel_type = 'Number:Temperature'
+                    channel_sitemap_type = 'Text'
+                    channel_group_type = None
+                if channel_mode == 'progress':
+                    channel_type = 'Number:Dimensionless'
+                    channel_sitemap_type = 'Text'
+                    channel_group_type = None
                 items.append(
                     MQTT_Item(
                         id=f"{channel_cfg['id']}",
                         name=channel_cfg['name'],
                         type=channel_type,
-                        icon=self.get_icon(default='light'),
+                        icon=self.get_icon(default=channel_icon),
                         groups=self.get_channel_groups(channel=channel['id'], type=channel_group_type),
                         expire=self.get_channel_expire(channel=channel['id']),
                         broker=self.config['mqtt_broker_id'],

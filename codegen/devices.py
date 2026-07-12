@@ -841,3 +841,38 @@ class DEVICES:
         'device_name': 'Petro.ws CO₂ sensor module',
         'device_url': 'https://github.com/petrows/smarthome-co2-module',
     }
+
+    # Galoped devices
+    # https://github.com/petrows/smarthome-galoped-dekad
+
+    # Model: 3D Printer (Temp + Progress)
+    GALOPED_3D_TP = {
+        'types': [
+            'tasmota',
+            'galoped',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+        ],
+        'device_name': 'Petro.ws Galoped analog display (3D+TP)',
+        'device_url': 'https://github.com/petrows/smarthome-galoped-dekad/blob/master/doc/device-3dp.md',
+        'tasmota_channels': [
+            # Temperature
+            {
+                'type': 'number',
+                'mode': 'temperature',
+                'icon': 'temperature',
+                'id': 'GalopedSet1',
+                'unit': 'C°',
+            },
+            # Progress
+            {
+                'type': 'number',
+                'mode': 'progress',
+                'icon': 'pressure',
+                'id': 'GalopedSet2',
+                'unit': '%',
+            },
+        ],
+    }
