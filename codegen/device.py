@@ -1156,6 +1156,7 @@ class Device:
                 if ch.lower() == channel_id:
                     channel_cfg = self.channels[ch]
             if channel_cfg:
+                channel_name = channel_cfg['name']
                 channel_type = 'Switch'
                 channel_sitemap_type = 'Switch'
                 channel_group_type = 'sw'
@@ -1174,17 +1175,19 @@ class Device:
                     channel_sitemap_type = 'Colorpicker'
                     channel_group_type = 'color'
                 if channel_mode == 'temperature':
+                    channel_name += ' [%d %unit%]'
                     channel_type = 'Number:Temperature'
                     channel_sitemap_type = 'Text'
                     channel_group_type = None
                 if channel_mode == 'progress':
+                    channel_name += ' [%d %%]'
                     channel_type = 'Number:Dimensionless'
                     channel_sitemap_type = 'Text'
                     channel_group_type = None
                 items.append(
                     MQTT_Item(
                         id=f"{channel_cfg['id']}",
-                        name=channel_cfg['name'],
+                        name=channel_name,
                         type=channel_type,
                         icon=self.get_icon(default=channel_icon),
                         groups=self.get_channel_groups(channel=channel['id'], type=channel_group_type),
