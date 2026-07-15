@@ -48,6 +48,7 @@ class MQTT_Item(Item):
         channel_id: Str,
         groups: List[str] = list(),
         expire: Str = None,
+        meta: List[str] = list(),
         sitemap_type: Str = None,
         icon: Str = None,
     ) -> None:
@@ -67,6 +68,9 @@ class MQTT_Item(Item):
 
         if expire:
             item_channel.append(f"expire=\"{expire}\" [ignoreStateUpdates=\"true\"]")
+        if meta:
+            item_channel.extend(meta)
+
         item_conf.append("{" + ", ".join(item_channel) + "}")
 
         self.conf_str.append(" ".join(item_conf))

@@ -57,6 +57,7 @@ class Device:
         self.expire_sec = self.get_expire_sec()
         self.icon = config_device.get('icon', None)
         self.groups = config_device.get('groups', {})
+        self.meta = config_device.get('meta', {})
         self.groups_skip_auto = config_device.get('groups_skip_auto', [])
         self.labels = config_device.get('labels', {})
         self.y2m = config_device.get('y2m', {})
@@ -197,6 +198,12 @@ class Device:
         if type in self.groups:
             groups.extend(self.groups[type])
         return groups
+
+    def get_meta(self, type: str) -> List[str]:
+        meta = []
+        if type in self.meta:
+            meta.extend(self.meta[type])
+        return meta
 
     def get_channel_groups(self, channel: str, type: str) -> List[str]:
         groups = []
@@ -967,6 +974,7 @@ class Device:
         # Device has switch (Lamp, Wall socket)
         if self.has_tag_any('lamp', 'plug'):
             item_groups = self.get_groups(type='sw')
+            item_meta=self.get_meta(type='sw')
             # If we want to proxy states from groups -> drop original list
             # And create proxy item, connected to groups, to check state before update
             if self.proxy_state:
@@ -994,6 +1002,7 @@ class Device:
                     type='Switch',
                     icon=self.get_icon(default='light'),
                     groups=item_groups,
+                    meta=item_meta,
                     expire=self.get_expire(),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:state',
@@ -1244,6 +1253,7 @@ class Device:
                     type='Dimmer',
                     icon=self.get_icon(default='light'),
                     groups=self.get_groups(type='dim'),
+                    meta=self.get_meta(type='dim'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:dim',
                     sitemap_type='Slider',
@@ -1270,6 +1280,7 @@ class Device:
                     type='Dimmer',
                     icon=self.get_icon(default='light'),
                     groups=self.get_groups(type='ct'),
+                    meta=self.get_meta(type='ct'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:ct',
                     sitemap_type='Slider',
@@ -1291,6 +1302,7 @@ class Device:
                     type='Color',
                     icon='colorwheel',
                     groups=self.get_groups(type='color'),
+                    meta=self.get_meta(type='color'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:color',
                     sitemap_type='Colorpicker',
@@ -1303,6 +1315,7 @@ class Device:
                     type='String',
                     icon='colorwheel',
                     groups=self.get_groups(type='color_mode'),
+                    meta=self.get_meta(type='color_mode'),
                     broker=self.config['mqtt_broker_id'],
                     channel_id=f'{self.id}:color_mode',
                     sitemap_type='Text',
@@ -1319,6 +1332,7 @@ class Device:
                         type='Dimmer',
                         icon=self.get_icon(default='light'),
                         groups=self.get_groups(type='dim'),
+                        meta=self.get_meta(type='dim'),
                         broker=self.config['mqtt_broker_id'],
                         channel_id=f'{self.id}:dim',
                         sitemap_type='Text',
