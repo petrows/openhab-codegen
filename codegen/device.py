@@ -11,7 +11,8 @@ import jinja2
 # Simple information channes, read only (all devices)
 DEVICE_SIMPLE_CHANNELS = [
     {'id': 'temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
-    {'id': 'local_temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'unit': 'C°' },
+    {'id': 'local_temperature', 'title': 'temp [%.0f %unit%]', 'type': 'Number:Temperature', 'icon': 'temperature', 'unit': 'C°' },
+    {'id': 'chip_temperature', 'title': 'chip [%.0f %unit%]', 'type': 'Number:Temperature', 'icon': 'temperature', 'unit': 'C°' },
     {'id': 'dewpoint', 'title': 'dewpoint [%.0f %unit%]', 'type': 'Number:Temperature', 'icon': 'temperature', 'unit': 'C°' },
     {'id': 'humidity', 'title': 'humidity  [%.0f %%]', 'type': 'Number:Dimensionless', 'unit': '%' },
     {'id': 'pressure', 'title': 'pressure  [%.0f %unit%]', 'type': 'Number:Pressure', 'unit': 'hPa' },

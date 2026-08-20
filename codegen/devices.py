@@ -752,6 +752,27 @@ class DEVICES:
         ]
     }
 
+    # Room sensor V3 + BLE (beacon only: no sensors)
+    TASMOTA_PWS_ROOM_SENSOR_V3_BEACON = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+        ],
+        'device_name': 'PWS room v3 (beacon)',
+        'device_url': 'https://petro.ws/',
+        'tasmota_channels': [],
+        'tasmota_sensors': [
+            {
+                'id': 'chip_temperature',
+                'type': 'temperature',
+                'path': '.ESP32.Temperature',
+            },
+        ]
+    }
+
     SILVERCREST_THERMOSTAT_368308_2010 = {
         'types': [
             'zigbee',
