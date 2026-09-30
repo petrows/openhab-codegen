@@ -772,6 +772,91 @@ class DEVICES:
             },
         ]
     }
+    # Room sensor V3 + BLE (CO2 version)
+    TASMOTA_PWS_ROOM_SENSOR_V3_CO2 = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+        ],
+        'device_name': 'PWS room v3 (CO2)',
+        'device_url': 'https://petro.ws/',
+        'tasmota_channels': [],
+        'tasmota_sensors': [
+            {
+                'id': 'chip_temperature',
+                'type': 'temperature',
+                'path': '.ESP32.Temperature',
+            },
+            {
+                'id': 'co2',
+                'type': 'co2',
+                'path': '.S8.CarbonDioxide',
+            },
+            {
+                'id': 'temperature',
+                'type': 'temperature',
+                'path': '.AHT2X.Temperature',
+            },
+            {
+                'id': 'humidity',
+                'type': 'humidity',
+                'path': '.AHT2X.Humidity',
+            },
+            {
+                'id': 'dewpoint',
+                'type': 'temperature',
+                'path': '.AHT2X.DewPoint',
+            },
+            {
+                'id': 'pressure',
+                'type': 'pressure',
+                'path': '.BMP280.Pressure',
+            },
+        ]
+    }
+    # Room sensor V3 + BLE (Climate-only version)
+    TASMOTA_PWS_ROOM_SENSOR_V3_TEMP = {
+        'types': [
+            'tasmota',
+            'activity',
+            'rssi',
+            'bssid',
+            'la',
+        ],
+        'device_name': 'PWS room v3 (Climate)',
+        'device_url': 'https://petro.ws/',
+        'tasmota_channels': [],
+        'tasmota_sensors': [
+            {
+                'id': 'chip_temperature',
+                'type': 'temperature',
+                'path': '.ESP32.Temperature',
+            },
+            {
+                'id': 'temperature',
+                'type': 'temperature',
+                'path': '.AHT2X.Temperature',
+            },
+            {
+                'id': 'humidity',
+                'type': 'humidity',
+                'path': '.AHT2X.Humidity',
+            },
+            {
+                'id': 'dewpoint',
+                'type': 'temperature',
+                'path': '.AHT2X.DewPoint',
+            },
+            {
+                'id': 'pressure',
+                'type': 'pressure',
+                'path': '.BMP280.Pressure',
+            },
+        ]
+    }
 
     SILVERCREST_THERMOSTAT_368308_2010 = {
         'types': [
