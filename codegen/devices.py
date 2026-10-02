@@ -964,6 +964,31 @@ class DEVICES:
         'device_name': 'Petro.ws Galoped analog display (3D+TP)',
         'device_url': 'https://github.com/petrows/smarthome-galoped-dekad/blob/master/doc/device-3dp.md',
         'tasmota_channels': [
+            # Backlight
+            {
+                'type': 'switch',
+                'id': 'POWER',
+            },
+            {
+                'type': 'dimmer',
+                'id': 'Dimmer',
+                'mode': 'dimmer',
+            },
+            {
+                'type': 'dimmer',
+                'id': 'White',
+                'mode': 'dimmer',
+            },
+            {
+                'type': 'dimmer',
+                'id': 'CT',
+                'mode': 'ct',
+            },
+            {
+                'type': 'color',
+                'id': 'HSBColor',
+                'mode': 'color',
+            },
             # Temperature
             {
                 'type': 'number',
